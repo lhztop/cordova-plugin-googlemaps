@@ -11,6 +11,7 @@
   1) basic functions, getMap
   2) Marker
   Futher functions, please feedback me. 
+  QQ group: 217463572
   
   thanks.
 
