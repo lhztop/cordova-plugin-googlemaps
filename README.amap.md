@@ -11,7 +11,8 @@
   1) basic functions, getMap
   2) Marker
   Futher functions, please feedback me. 
-  QQ group: 217463572
+  QQ group: 217463572 
+  <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=Hn_L9Lfs25GKMk3OixAo2n_o_fKbWm8J&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="cordova 高德地图" title="cordova 高德地图"></a>
   
   thanks.
 
