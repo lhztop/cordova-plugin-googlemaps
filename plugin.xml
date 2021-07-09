@@ -126,7 +126,8 @@
     <engine name="apple-xcode" version=">=9.0.0" />
     <engine name="apple-ios" version=">=10.0.0" />
   </engines>
-
+  <preference name="AMAP_ANDROID_KEY" />
+  <preference name="AMAP_IOS_KEY" />
   <!-- android -->
   <platform name="android">
     <info>
@@ -282,6 +283,13 @@
     <resource-file src="src/android/res/values-da/pgm_strings.xml" target="res/values-da/pgm_strings.xml"/>
     <!-- localized messages for Vietnamese -->
     <resource-file src="src/android/res/values-vi/pgm_strings.xml" target="res/values-vi/pgm_strings.xml"/>
+    <lib-file src="libs/AMap3DMap_7.9.1_AMapNavi_7.9.1_AMapSearch_7.9.0_AMapTrack_1.4.0_AMapLocation_5.3.1_20210414.jar"/>
+    <lib-file src="libs/arm64-v8a"/>
+    <lib-file src="libs/armeabi"/>
+    <lib-file src="libs/armeabi-v7a"/>
+    <lib-file src="libs/x86"/>
+    <lib-file src="libs/x86_64"/>
+    <framework src="src/config.gradle" custom="true" type="gradleReference"/>
   </platform>
 
   <!-- ios -->
