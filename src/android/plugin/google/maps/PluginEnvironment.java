@@ -6,8 +6,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -55,35 +53,34 @@ public class PluginEnvironment extends CordovaPlugin {
     // ------------------------------
     // Check of Google Play Services
     // ------------------------------
-    int checkGooglePlayServices =
-      GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(cordova.getActivity());
-    if (checkGooglePlayServices != ConnectionResult.SUCCESS) {
-      String errorMsg = GoogleApiAvailability.getInstance().getErrorString(checkGooglePlayServices);
-      callbackContext.error(errorMsg);
-
-      try {
-        cordova.getActivity().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.gms")));
-      } catch (android.content.ActivityNotFoundException anfe) {
-        cordova.getActivity().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=com.google.android.gms")));
-      }
-
-      // End the app (in order to prevent lots of crashes)
-      cordova.getActivity().finish();
-
-      return;
-    }
+//    int checkGooglePlayServices =
+//      GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(cordova.getActivity());
+//    if (checkGooglePlayServices != ConnectionResult.SUCCESS) {
+//      String errorMsg = GoogleApiAvailability.getInstance().getErrorString(checkGooglePlayServices);
+//      callbackContext.error(errorMsg);
+//
+//      try {
+//        cordova.getActivity().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.gms")));
+//      } catch (android.content.ActivityNotFoundException anfe) {
+//        cordova.getActivity().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=com.google.android.gms")));
+//      }
+//
+//      // End the app (in order to prevent lots of crashes)
+//      cordova.getActivity().finish();
+//
+//      return;
 
     // ------------------------------
     // Check of Google Maps Android API v2
     // ------------------------------
-    try {
-      @SuppressWarnings({ "rawtypes" })
-      Class GoogleMapsClass = Class.forName("com.google.android.gms.maps.GoogleMap");
-    } catch (Exception e) {
-      Log.e("GoogleMaps", "Error", e);
-      callbackContext.error(e.getMessage());
-      return;
-    }
+//    try {
+//      @SuppressWarnings({ "rawtypes" })
+//      Class GoogleMapsClass = Class.forName("com.google.android.gms.maps.GoogleMap");
+//    } catch (Exception e) {
+//      Log.e("GoogleMaps", "Error", e);
+//      callbackContext.error(e.getMessage());
+//      return;
+//    }
     callbackContext.success();
   }
 

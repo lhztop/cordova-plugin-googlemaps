@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import android.util.Log;
 
 import com.amap.api.maps.AMap;
-import com.google.android.gms.maps.GoogleMap;
 import com.amap.api.maps.model.Circle;
 import com.amap.api.maps.model.GroundOverlay;
 import com.amap.api.maps.model.LatLng;
@@ -80,7 +79,7 @@ public class MyPlugin extends CordovaPlugin implements MyPluginInterface {
               if (TAG.startsWith("map")) {
                 mapCtrl.mPluginLayout.pluginOverlays.put(TAG, (PluginMap) MyPlugin.this);
               } else if (TAG.startsWith("streetview")) {
-                mapCtrl.mPluginLayout.pluginOverlays.put(TAG, (PluginStreetViewPanorama) MyPlugin.this);
+//                mapCtrl.mPluginLayout.pluginOverlays.put(TAG, (PluginStreetViewPanorama) MyPlugin.this);
               }
             } else {
               PluginEntry pluginEntry = new PluginEntry(TAG, MyPlugin.this);
