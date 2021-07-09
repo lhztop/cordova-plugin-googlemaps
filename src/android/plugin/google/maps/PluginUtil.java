@@ -73,6 +73,18 @@ public class PluginUtil {
     return true;
   }
 
+ public final static LatLng getLatLngBoundCenter(LatLngBounds llb) {
+    double lat = (llb.southwest.latitude + llb.northeast.latitude) / 2.0D;
+    double lng = llb.northeast.longitude;
+    if (llb.southwest.longitude <= lng) {
+      lng = (lng + llb.southwest.longitude ) / 2.0D;
+    } else {
+      lng = (lng + 360.0D + llb.southwest.longitude) / 2.0D;
+    }
+
+    return new LatLng(lat, lng);
+  }
+
   public static LatLngBounds getBoundsFromCircle(LatLng center, double radius) {
     double d2r = Math.PI / 180;   // degrees to radians
     double r2d = 180 / Math.PI;   // radians to degrees
