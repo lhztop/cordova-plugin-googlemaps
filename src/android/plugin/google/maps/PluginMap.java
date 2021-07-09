@@ -269,9 +269,8 @@ public class PluginMap extends MyPlugin implements OnMarkerClickListener,
         Class targetClass = target.getClass();
         if ("org.json.JSONArray".equals(targetClass.getName())) {
           JSONArray points = camera.getJSONArray("target");
-          com.google.android.gms.maps.model.LatLngBounds latLngBound = PluginUtilGoogle.JSONArray2LatLngBounds(points);
-          this.initCameraBounds = PluginUtilGoogle.toAmapLatLngBounds(latLngBound);
-          builder.target(PluginUtilGoogle.toAmapLatLng(latLngBound.getCenter()));
+          this.initCameraBounds = PluginUtil.JSONArray2LatLngBounds(points);;
+          builder.target(PluginUtil.getLatLngBoundCenter(this.initCameraBounds));
 
         } else {
           JSONObject latLng = camera.getJSONObject("target");
@@ -1251,9 +1250,8 @@ public class PluginMap extends MyPlugin implements OnMarkerClickListener,
           Class targetClass = target.getClass();
           if ("org.json.JSONArray".equals(targetClass.getName())) {
             JSONArray points = camera.getJSONArray("target");
-            com.google.android.gms.maps.model.LatLngBounds googleCameraBounds = PluginUtilGoogle.JSONArray2LatLngBounds(points);
-            cameraBounds = PluginUtilGoogle.toAmapLatLngBounds(googleCameraBounds);
-            builder.target(PluginUtilGoogle.toAmapLatLng(googleCameraBounds.getCenter()));
+            cameraBounds = PluginUtil.JSONArray2LatLngBounds(points);;
+            builder.target(PluginUtil.getLatLngBoundCenter(cameraBounds));
 
 
           } else {
@@ -1349,8 +1347,8 @@ public class PluginMap extends MyPlugin implements OnMarkerClickListener,
                 if ("org.json.JSONArray".equals(targetClass.getName())) {
                   JSONArray points = preferences.getJSONArray("gestureBounds");
                   if (points.length() > 0) {
-                    com.google.android.gms.maps.model.LatLngBounds bounds = PluginUtilGoogle.JSONArray2LatLngBounds(points);
-                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(PluginUtilGoogle.toAmapLatLng(bounds.getCenter()));
+                    LatLngBounds bounds = PluginUtil.JSONArray2LatLngBounds(points);
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(PluginUtil.getLatLngBoundCenter(bounds));
                     activity.runOnUiThread(new Runnable() {
                       @Override
                       public void run() {
