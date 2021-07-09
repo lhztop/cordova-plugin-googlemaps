@@ -84,7 +84,8 @@ public class CordovaGoogleMaps extends CordovaPlugin implements ViewTreeObserver
         // ------------------------------
         // Check of Google Play Services
         // ------------------------------
-        int checkGooglePlayServices = GooglePlayServicesUtil.isGooglePlayServicesAvailable(activity);
+//        int checkGooglePlayServices = GooglePlayServicesUtil.isGooglePlayServicesAvailable(activity);
+        int checkGooglePlayServices = ConnectionResult.SUCCESS;
 
         Log.d(TAG, "----> checkGooglePlayServices = " + (ConnectionResult.SUCCESS == checkGooglePlayServices));
 
@@ -565,7 +566,7 @@ public class CordovaGoogleMaps extends CordovaPlugin implements ViewTreeObserver
             if (pluginMap.map != null) {
 
               // Trigger the CAMERA_MOVE_END mandatory
-              pluginMap.onCameraIdle();
+//              pluginMap.onCameraIdle();
             }
           }
         }

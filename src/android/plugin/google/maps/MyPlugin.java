@@ -4,14 +4,15 @@ import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.util.Log;
 
+import com.amap.api.maps.AMap;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.GroundOverlay;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.Polygon;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.TileOverlay;
+import com.amap.api.maps.model.Circle;
+import com.amap.api.maps.model.GroundOverlay;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.Polygon;
+import com.amap.api.maps.model.Polyline;
+import com.amap.api.maps.model.TileOverlay;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -34,7 +35,7 @@ public class MyPlugin extends CordovaPlugin implements MyPluginInterface {
   protected static ExecutorService executorService = null;
 
   public CordovaGoogleMaps mapCtrl = null;
-  public GoogleMap map = null;
+  public AMap map = null;
   public PluginMap pluginMap = null;
   protected boolean isRemoved = false;
   protected static float density = Resources.getSystem().getDisplayMetrics().density;

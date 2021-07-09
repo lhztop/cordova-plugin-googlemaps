@@ -4,7 +4,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 
-import com.google.android.gms.maps.model.LatLngBounds;
+import com.amap.api.maps.model.LatLngBounds;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -220,7 +220,7 @@ public class PluginGeocoder extends CordovaPlugin {
       extra.put("url", addr.getUrl());
 
       JSONArray lines = new JSONArray();
-      // Handled cases where we have only one line address.       
+      // Handled cases where we have only one line address.
       for (int i = 0; i <= addr.getMaxAddressLineIndex(); i++) {
          lines.put(addr.getAddressLine(i));
       }

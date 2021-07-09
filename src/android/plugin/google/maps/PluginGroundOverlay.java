@@ -3,11 +3,11 @@ package plugin.google.maps;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.GroundOverlay;
-import com.google.android.gms.maps.model.GroundOverlayOptions;
-import com.google.android.gms.maps.model.LatLngBounds;
+import com.amap.api.maps.model.BitmapDescriptor;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.GroundOverlay;
+import com.amap.api.maps.model.GroundOverlayOptions;
+import com.amap.api.maps.model.LatLngBounds;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -45,7 +45,7 @@ public class PluginGroundOverlay extends MyPlugin implements MyPluginInterface  
   }
 
   public void _createGroundOverlay(final String idBase, final JSONObject opts, final CallbackContext callbackContext) throws JSONException {
-    final GroundOverlayOptions options = new GroundOverlayOptions();
+    final com.amap.api.maps.model.GroundOverlayOptions options = new com.amap.api.maps.model.GroundOverlayOptions();
     final JSONObject properties = new JSONObject();
     options.anchor(0.5f, 0.5f);
 
@@ -68,7 +68,7 @@ public class PluginGroundOverlay extends MyPlugin implements MyPluginInterface  
     if (opts.has("bounds")) {
       JSONArray points = opts.getJSONArray("bounds");
       LatLngBounds bounds = PluginUtil.JSONArray2LatLngBounds(points);
-      options.positionFromBounds(bounds);
+      options.positionFromBounds(PluginUtil.toAmapLatLngBounds(bounds));
     }
     if (opts.has("clickable")) {
       properties.put("isClickable", opts.getBoolean("clickable"));
@@ -79,7 +79,7 @@ public class PluginGroundOverlay extends MyPlugin implements MyPluginInterface  
 
     // Since this plugin provide own click detection,
     // disable default clickable feature.
-    options.clickable(false);
+//    options.clickable(false);
 
     // Load image
     final String imageUrl = opts.getString("url");
@@ -94,13 +94,13 @@ public class PluginGroundOverlay extends MyPlugin implements MyPluginInterface  
         }
 
         AsyncLoadImage.AsyncLoadImageResult result = (AsyncLoadImage.AsyncLoadImageResult)object;
-        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(result.image);
+        BitmapDescriptor bitmapDescriptor = com.amap.api.maps.model.BitmapDescriptorFactory.fromBitmap(result.image);
         options.image(bitmapDescriptor);
         //options.zIndex(Calendar.getInstance().getTimeInMillis());
-        GroundOverlay groundOverlay = self.map.addGroundOverlay(options);
+        com.amap.api.maps.model.GroundOverlay groundOverlay = self.map.addGroundOverlay(options);
         overlayImage.put("groundoverlay_" + idBase, result.image);
 
-        groundOverlay.setTag(idBase);
+//        groundOverlay.setTag(idBase);
 
         pluginMap.objects.put("groundoverlay_" + idBase, groundOverlay);
 
@@ -158,7 +158,7 @@ public class PluginGroundOverlay extends MyPlugin implements MyPluginInterface  
                     if (image != null && !image.isRecycled()) {
                       image.recycle();
                     }
-                    groundOverlay.setTag(null);
+//                    groundOverlay.setTag(null);
                     groundOverlay.remove();
                     groundOverlay = null;
                   } else {

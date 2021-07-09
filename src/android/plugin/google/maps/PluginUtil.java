@@ -19,9 +19,9 @@ import android.util.Base64;
 
 import com.google.android.gms.maps.model.IndoorBuilding;
 import com.google.android.gms.maps.model.IndoorLevel;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.LatLngBounds.Builder;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.LatLngBounds;
+import com.amap.api.maps.model.LatLngBounds.Builder;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaResourceApi;
@@ -190,6 +190,18 @@ public class PluginUtil {
     return path;
   }
   */
+
+  public static com.amap.api.maps.model.LatLngBounds toAmapLatLngBounds(LatLngBounds llb) {
+    com.amap.api.maps.model.LatLng sw = new com.amap.api.maps.model.LatLng(llb.southwest.latitude, llb.southwest.longitude);
+    com.amap.api.maps.model.LatLng ne = new com.amap.api.maps.model.LatLng(llb.northeast.latitude, llb.northeast.longitude);
+    return new com.amap.api.maps.model.LatLngBounds(sw, ne);
+
+  }
+
+  public static com.amap.api.maps.model.LatLng toAmapLatLng(LatLng ll) {
+    return new com.amap.api.maps.model.LatLng(ll.latitude, ll.longitude);
+  }
+
   public static LatLngBounds JSONArray2LatLngBounds(JSONArray points) throws JSONException {
     List<LatLng> path = JSONArray2LatLngList(points);
     Builder builder = LatLngBounds.builder();

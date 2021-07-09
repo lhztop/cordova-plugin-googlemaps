@@ -1,9 +1,9 @@
 package plugin.google.maps;
 
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
+import com.amap.api.maps.model.Circle;
+import com.amap.api.maps.model.CircleOptions;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.LatLngBounds;
 
 import org.apache.cordova.CallbackContext;
 import org.json.JSONArray;
@@ -62,13 +62,15 @@ public class PluginCircle extends MyPlugin implements MyPluginInterface {
 
     // Since this plugin provide own click detection,
     // disable default clickable feature.
-    circleOptions.clickable(false);
+//    circleOptions.clickable(false);
 
     cordova.getActivity().runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        Circle circle = map.addCircle(circleOptions);
-        circle.setTag(hashCode);
+        //TODO: make to ampa circle
+//        Circle circle = map.addCircle(circleOptions);
+        com.amap.api.maps.model.Circle circle = map.addCircle(new com.amap.api.maps.model.CircleOptions());
+//        circle.setTag(hashCode);
         pluginMap.objects.put("circle_" + hashCode, circle);
 
         pluginMap.objects.put("circle_property_" + hashCode, properties);

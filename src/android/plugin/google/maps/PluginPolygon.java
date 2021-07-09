@@ -1,9 +1,10 @@
 package plugin.google.maps;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Polygon;
-import com.google.android.gms.maps.model.PolygonOptions;
+import com.amap.api.maps.model.BaseHoleOptions;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.LatLngBounds;
+import com.amap.api.maps.model.Polygon;
+import com.amap.api.maps.model.PolygonOptions;
 
 import org.apache.cordova.CallbackContext;
 import org.json.JSONArray;
@@ -64,7 +65,8 @@ public class PluginPolygon extends MyPlugin implements MyPluginInterface  {
             for (i = 0; i < holes.length(); i++) {
                 latLngArray = holes.getJSONArray(i);
                 hole = PluginUtil.JSONArray2LatLngList(latLngArray);
-                polygonOptions.addHole(hole);
+
+//                polygonOptions.addHole(hole);
                 holePaths.add(hole);
                 iterator = hole.iterator();
                 builder2 = new LatLngBounds.Builder();
@@ -90,7 +92,7 @@ public class PluginPolygon extends MyPlugin implements MyPluginInterface  {
             polygonOptions.visible(opts.getBoolean("visible"));
         }
         if (opts.has("geodesic")) {
-            polygonOptions.geodesic(opts.getBoolean("geodesic"));
+//            polygonOptions.geodesic(opts.getBoolean("geodesic"));
         }
         if (opts.has("zIndex")) {
             polygonOptions.zIndex(opts.getInt("zIndex"));
@@ -102,18 +104,18 @@ public class PluginPolygon extends MyPlugin implements MyPluginInterface  {
         }
         properties.put("isVisible", polygonOptions.isVisible());
         properties.put("zIndex", polygonOptions.getZIndex());
-        properties.put("isGeodesic", polygonOptions.isGeodesic());
+//        properties.put("isGeodesic", polygonOptions.isGeodesic());
 
         // Since this plugin uses own detecting process,
         // set false to the clickable property.
-        polygonOptions.clickable(false);
+//        polygonOptions.clickable(false);
 
         cordova.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Polygon polygon = map.addPolygon(polygonOptions);
                 String id = hashCode;
-                polygon.setTag(hashCode);
+//                polygon.setTag(hashCode);
                 pluginMap.objects.put("polygon_"+ id, polygon);
                 pluginMap.objects.put("polygon_bounds_" + id, builder.build());
                 pluginMap.objects.put("polygon_path_" + id, path);
@@ -477,7 +479,7 @@ public class PluginPolygon extends MyPlugin implements MyPluginInterface  {
             @Override
             public void run() {
                 // Update the polygon
-                polygon.setHoles(holes);
+//                polygon.setHoles(holes);
                 callbackContext.success();
             }
         });
@@ -519,7 +521,7 @@ public class PluginPolygon extends MyPlugin implements MyPluginInterface  {
             @Override
             public void run() {
                 // Update the polygon
-                polygon.setHoles(holes);
+//                polygon.setHoles(holes);
                 callbackContext.success();
             }
         });
@@ -565,7 +567,7 @@ public class PluginPolygon extends MyPlugin implements MyPluginInterface  {
             @Override
             public void run() {
                 // Update the polygon
-                polygon.setHoles(holes);
+//                polygon.setHoles(holes);
                 callbackContext.success();
             }
         });
@@ -608,7 +610,7 @@ public class PluginPolygon extends MyPlugin implements MyPluginInterface  {
             @Override
             public void run() {
                 // Update the polygon
-                polygon.setHoles(holes);
+//                polygon.setHoles(holes);
                 callbackContext.success();
             }
         });
@@ -637,7 +639,7 @@ public class PluginPolygon extends MyPlugin implements MyPluginInterface  {
             public void run() {
                 // Update the polygon
                 try {
-                    polygon.setHoles(holes);
+//                    polygon.setHoles(holes);
                 } catch (Exception e) {
                     // Ignore this error
                     //e.printStackTrace();
@@ -674,7 +676,7 @@ public class PluginPolygon extends MyPlugin implements MyPluginInterface  {
             @Override
             public void run() {
                 // Update the polygon
-                polygon.setHoles(holes);
+//                polygon.setHoles(holes);
                 callbackContext.success();
             }
         });
@@ -705,7 +707,8 @@ public class PluginPolygon extends MyPlugin implements MyPluginInterface  {
             @Override
             public void run() {
                 // Update the polygon
-                polygon.setHoles(holes);
+              //TODO: setHoles AMP
+//                polygon.setHoles(holes);
                 callbackContext.success();
             }
         });

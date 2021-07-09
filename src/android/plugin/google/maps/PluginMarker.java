@@ -16,12 +16,12 @@ import android.view.animation.BounceInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
-import com.google.android.gms.maps.Projection;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.amap.api.maps.Projection;
+import com.amap.api.maps.model.BitmapDescriptor;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -164,7 +164,7 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface {
                 !objectId.startsWith("marker_imageSize") &&
                 !objectId.startsWith("marker_icon_")) {
                 Marker marker = (Marker) pluginMap.objects.remove(objectId);
-                marker.setTag(null);
+                marker.setObject(null);
                 marker.remove();
                 marker = null;
               } else {
@@ -262,10 +262,10 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface {
       markerOptions.draggable(opts.getBoolean("draggable"));
     }
     if (opts.has("rotation")) {
-      markerOptions.rotation((float) opts.getDouble("rotation"));
+      markerOptions.rotateAngle((float) opts.getDouble("rotation"));
     }
     if (opts.has("flat")) {
-      markerOptions.flat(opts.getBoolean("flat"));
+      markerOptions.setFlat(opts.getBoolean("flat"));
     }
     if (opts.has("opacity")) {
       markerOptions.alpha((float) opts.getDouble("opacity"));
@@ -297,7 +297,7 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface {
       @Override
       public void run() {
         final Marker marker = map.addMarker(markerOptions);
-        marker.setTag(markerId);
+        marker.setObject(markerId);
         marker.hideInfoWindow();
 
         cordova.getThreadPool().execute(new Runnable() {
@@ -515,7 +515,7 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface {
               double lat = t * markerLatLng.latitude + (1 - t) * startLatLng.latitude;
               marker.setPosition(new LatLng(lat, lng));
             }
-            
+
             if (t < 1.0) {
               // Post again 16ms later.
               handler.postDelayed(this, 16);
@@ -868,15 +868,15 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface {
   }
 
   protected void _removeMarker(Marker marker) {
-    if (marker == null || marker.getTag() == null) {
+    if (marker == null || marker.getObject() == null) {
       return;
     }
     //---------------------------------------------
     // Removes marker safely
     // (prevent the `un-managed object exception`)
     //---------------------------------------------
-    String iconCacheKey = "marker_icon_" + marker.getTag();
-    marker.setTag(null);
+    String iconCacheKey = "marker_icon_" + marker.getObject();
+    marker.setObject(null);
     marker.remove();
 
     //---------------------------------------------------------------------------------
@@ -1072,7 +1072,7 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface {
         }
 
         synchronized (marker) {
-          String markerTag = marker.getTag() + "";
+          String markerTag = marker.getObject() + "";
           String markerIconTag = "marker_icon_" + markerTag;
           String markerImgSizeTag = "marker_imageSize_" + markerTag;
 
@@ -1105,7 +1105,7 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface {
           // Counts up the markers that use the same icon image.
           //-------------------------------------------------------
           if (result.cacheHit) {
-            if (marker == null || marker.getTag() == null) {
+            if (marker == null || marker.getObject() == null) {
               callback.onPostExecute(marker);
               return;
             }
@@ -1127,7 +1127,7 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface {
             result.image = drawLabel(result.image, iconProperty.getBundle("label"));
           }
           BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(result.image);
-          if (bitmapDescriptor == null || marker == null || marker.getTag() == null) {
+          if (bitmapDescriptor == null || marker == null || marker.getObject() == null) {
             callback.onPostExecute(marker);
             return;
           }
@@ -1206,7 +1206,7 @@ public class PluginMarker extends MyPlugin implements MyPluginInterface {
     cordova.getActivity().runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        marker.setInfoWindowAnchor((float) (fAnchorX / imageWidth), (float) (fAnchorY / imageHeight));
+        marker.setAnchor((float) (fAnchorX / imageWidth), (float) (fAnchorY / imageHeight));
       }
     });
   }

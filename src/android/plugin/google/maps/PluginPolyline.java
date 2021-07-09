@@ -3,12 +3,12 @@ package plugin.google.maps;
 import android.graphics.Color;
 import android.util.Log;
 
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
+import com.amap.api.maps.model.CircleOptions;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.LatLngBounds;
+import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.Polyline;
+import com.amap.api.maps.model.PolylineOptions;
 
 import org.apache.cordova.CallbackContext;
 import org.json.JSONArray;
@@ -73,14 +73,14 @@ public class PluginPolyline extends MyPlugin implements MyPluginInterface  {
 
     // Since this plugin provide own click detection,
     // disable default clickable feature.
-    polylineOptions.clickable(false);
+//    polylineOptions.clickable(false);
 
     cordova.getActivity().runOnUiThread(new Runnable() {
       @Override
       public void run() {
 
         Polyline polyline = map.addPolyline(polylineOptions);
-        polyline.setTag(hashCode);
+//        polyline.setTag(hashCode);
         String id = "polyline_" + hashCode;
         pluginMap.objects.put(id, polyline);
 
