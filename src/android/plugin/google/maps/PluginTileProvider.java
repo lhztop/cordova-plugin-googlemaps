@@ -16,8 +16,8 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.Log;
 
-import com.google.android.gms.maps.model.Tile;
-import com.google.android.gms.maps.model.TileProvider;
+import com.amap.api.maps.model.Tile;
+import com.amap.api.maps.model.TileProvider;
 
 import org.apache.cordova.CordovaWebView;
 
@@ -387,6 +387,16 @@ public class PluginTileProvider implements TileProvider  {
       e.printStackTrace();
     }
     return null;
+  }
+
+  @Override
+  public int getTileWidth() {
+    return 0;
+  }
+
+  @Override
+  public int getTileHeight() {
+    return 0;
   }
 
   private byte[] bitmapToByteArray(Bitmap bitmap) {

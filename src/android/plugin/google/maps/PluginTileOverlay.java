@@ -4,8 +4,8 @@ import android.content.res.AssetManager;
 import android.view.View;
 import android.webkit.WebView;
 
-import com.google.android.gms.maps.model.TileOverlay;
-import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.amap.api.maps.model.TileOverlay;
+import com.amap.api.maps.model.TileOverlayOptions;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPreferences;
@@ -40,7 +40,7 @@ public class PluginTileOverlay extends MyPlugin implements MyPluginInterface {
       options.visible(opts.getBoolean("visible"));
     }
     if (opts.has("opacity")) {
-      options.transparency((float)(1 - opts.getDouble("opacity")));
+//      options.transparency((float)(1 - opts.getDouble("opacity")));
     }
 
     boolean isDebug = false;

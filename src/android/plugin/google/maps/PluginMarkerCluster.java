@@ -4,10 +4,10 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.LatLngBounds;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -478,7 +478,7 @@ public class PluginMarkerCluster extends PluginMarker {
             marker = map.addMarker(new MarkerOptions()
                     .position(new LatLng(markerProperties.getDouble("lat"), markerProperties.getDouble("lng")))
                     .visible(false));
-            marker.setTag(clusterId_markerId);
+            marker.setObject(clusterId_markerId);
 
             // Store the marker instance with markerId
             synchronized (pluginMap.objects) {
@@ -653,7 +653,7 @@ public class PluginMarkerCluster extends PluginMarker {
       @Override
       public void onError(String errorMsg) {
         synchronized (pluginMap.objects) {
-          if (marker != null && marker.getTag() != null) {
+          if (marker != null && marker.getObject() != null) {
             PluginMarkerCluster.this._removeMarker(marker);
           }
           pluginMap.objects.remove(markerId);
