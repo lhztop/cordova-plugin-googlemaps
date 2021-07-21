@@ -45,7 +45,7 @@
       key = [keys objectAtIndex:i];
       if ([key hasPrefix:@"tileoverlay_property"]) {
         key = [key stringByReplacingOccurrencesOfString:@"_property" withString:@""];
-        GMSTileLayer *tileoverlay = (GMSTileLayer *)[self.mapCtrl.objects objectForKey:key];
+        MATileOverlay *tileoverlay = (MATileOverlay *)[self.mapCtrl.objects objectForKey:key];
         tileoverlay.map = nil;
         tileoverlay = nil;
       }
@@ -76,7 +76,7 @@
       //NSString *tileUrlFormat = [json objectForKey:@"tileUrlFormat"];
 
 
-      GMSTileLayer *layer;
+      MATileOverlay *layer;
       NSString *_id = [NSString stringWithFormat:@"tileoverlay_%@", idBase];
 
       //NSRange range = [tileUrlFormat rangeOfString:@"http"];
@@ -121,13 +121,14 @@
         layer.map = self.mapCtrl.map;
       }
       if ([json valueForKey:@"zIndex"] && [json valueForKey:@"zIndex"] != [NSNull null]) {
-        layer.zIndex = [[json valueForKey:@"zIndex"] floatValue];
+//        layer.zIndex = [[json valueForKey:@"zIndex"] floatValue];
       }
       if ([json valueForKey:@"tileSize"] && [json valueForKey:@"tileSize"] != [NSNull null]) {
-        layer.tileSize = [[json valueForKey:@"tileSize"] integerValue];
+        int size = [[json valueForKey:@"tileSize"] integerValue];
+        layer.tileSize = CGSizeMake(size, size);
       }
       if ([json valueForKey:@"opacity"] && [json valueForKey:@"opacity"] != [NSNull null]) {
-        layer.opacity = [[json valueForKey:@"opacity"] floatValue];
+//        layer.opacity = [[json valueForKey:@"opacity"] floatValue];
       }
 
 
@@ -153,7 +154,7 @@
     NSString *urlKey = [command.arguments objectAtIndex:1];
     NSString *tileUrl = [command.arguments objectAtIndex:2];
     NSString *pluginId = [NSString stringWithFormat:@"tileoverlay_%@", _id];
-    GMSTileLayer *tileLayer = [self.mapCtrl.objects objectForKey:pluginId];
+    MATileOverlay *tileLayer = [self.mapCtrl.objects objectForKey:pluginId];
 
 
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -175,7 +176,7 @@
 
   [self.executeQueue addOperationWithBlock:^{
       NSString *tileLayerKey = [command.arguments objectAtIndex:0];
-      GMSTileLayer *layer = (GMSTileLayer *)[self.mapCtrl.objects objectForKey:tileLayerKey];
+      MATileOverlay *layer = (MATileOverlay *)[self.mapCtrl.objects objectForKey:tileLayerKey];
       Boolean isVisible = [[command.arguments objectAtIndex:1] boolValue];
       dispatch_async(dispatch_get_main_queue(), ^{
           if (isVisible) {
@@ -201,9 +202,9 @@
   [self.executeQueue addOperationWithBlock:^{
       NSString *tileLayerKey = [command.arguments objectAtIndex:0];
       dispatch_async(dispatch_get_main_queue(), ^{
-          GMSTileLayer *layer = (GMSTileLayer *)[self.mapCtrl.objects objectForKey:tileLayerKey];
+          MATileOverlay *layer = (MATileOverlay *)[self.mapCtrl.objects objectForKey:tileLayerKey];
           layer.map = nil;
-          [layer clearTileCache];
+//          [layer clearTileCache];
           [self.mapCtrl.objects removeObjectForKey:tileLayerKey];
           layer = nil;
       });
@@ -223,10 +224,10 @@
 {
   [self.executeQueue addOperationWithBlock:^{
       NSString *tileLayerKey = [command.arguments objectAtIndex:0];
-      GMSTileLayer *layer = (GMSTileLayer *)[self.mapCtrl.objects objectForKey:tileLayerKey];
+      MATileOverlay *layer = (MATileOverlay *)[self.mapCtrl.objects objectForKey:tileLayerKey];
       NSInteger zIndex = [[command.arguments objectAtIndex:1] integerValue];
       dispatch_async(dispatch_get_main_queue(), ^{
-          [layer setZIndex:(int)zIndex];
+//          [layer setZIndex:(int)zIndex];
 
           CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
           [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -242,10 +243,10 @@
 
   [self.executeQueue addOperationWithBlock:^{
       NSString *tileLayerKey = [command.arguments objectAtIndex:0];
-      GMSTileLayer *layer = (GMSTileLayer *)[self.mapCtrl.objects objectForKey:tileLayerKey];
+      MATileOverlay *layer = (MATileOverlay *)[self.mapCtrl.objects objectForKey:tileLayerKey];
       Boolean isEnabled = [[command.arguments objectAtIndex:1] boolValue];
       dispatch_async(dispatch_get_main_queue(), ^{
-          [layer setFadeIn:isEnabled];
+//          [layer setFadeIn:isEnabled];
 
           CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
           [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -264,10 +265,10 @@
 
   [self.executeQueue addOperationWithBlock:^{
       NSString *tileLayerKey = [command.arguments objectAtIndex:0];
-      GMSTileLayer *layer = (GMSTileLayer *)[self.mapCtrl.objects objectForKey:tileLayerKey];
+      MATileOverlay *layer = (MATileOverlay *)[self.mapCtrl.objects objectForKey:tileLayerKey];
       double opacity = [[command.arguments objectAtIndex:1] doubleValue];
       dispatch_async(dispatch_get_main_queue(), ^{
-          [layer setOpacity:opacity];
+//          [layer setOpacity:opacity];
 
           CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
           [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];

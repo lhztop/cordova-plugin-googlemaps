@@ -7,12 +7,14 @@
 //
 
 #import <Cordova/CDV.h>
-#import <GoogleMaps/GoogleMaps.h>
+//#import <GoogleMaps/GoogleMaps.h>
+#import <AMapNaviKit/MAMapKit.h>
+#import "GMSCoordinateBounds+Geometry.h"
 #import "PluginMapViewController.h"
-#import "PluginStreetViewPanoramaController.h"
+//#import "PluginStreetViewPanoramaController.h"
 #import "PluginUtil.h"
 #import "PluginMap.h"
-#import "PluginStreetViewPanorama.h"
+//#import "PluginStreetViewPanorama.h"
 #import "MyPluginLayer.h"
 #import "IPluginProtocol.h"
 #import "IPluginView.h"

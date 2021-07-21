@@ -31,7 +31,7 @@
         key = [keys objectAtIndex:i];
         if ([key hasPrefix:@"groundoverlay_property"]) {
           key = [key stringByReplacingOccurrencesOfString:@"_property" withString:@""];
-          GMSGroundOverlay *groundoverlay = (GMSGroundOverlay *)[self.mapCtrl.objects objectForKey:key];
+          MAGroundOverlay *groundoverlay = (MAGroundOverlay *)[self.mapCtrl.objects objectForKey:key];
           groundoverlay.map = nil;
           groundoverlay = nil;
         }
@@ -64,38 +64,38 @@
     NSString *idBase = [command.arguments objectAtIndex:2];
     NSArray *points = [json objectForKey:@"bounds"];
 
-    GMSMutablePath *path = [GMSMutablePath path];
-    GMSCoordinateBounds *bounds;
+//    GMSMutablePath *path = [GMSMutablePath path];
+    MACoordinateBounds bounds;
 
-    if (points) {
-        //Generate a bounds
-        int i = 0;
-        NSDictionary *latLng;
-        for (i = 0; i < points.count; i++) {
-            latLng = [points objectAtIndex:i];
-            [path addCoordinate:CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] floatValue], [[latLng objectForKey:@"lng"] floatValue])];
-        }
-    }
-    bounds = [[GMSCoordinateBounds alloc] initWithPath:path];
+//    if (points) {
+//        //Generate a bounds
+//        int i = 0;
+//        NSDictionary *latLng;
+//        for (i = 0; i < points.count; i++) {
+//            latLng = [points objectAtIndex:i];
+//            [path addCoordinate:CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] floatValue], [[latLng objectForKey:@"lng"] floatValue])];
+//        }
+//    }
+    bounds = MACoordinateBoundsMake(CLLocationCoordinate2DMake(0.0f, 0.0f), CLLocationCoordinate2DMake(0.0f, 0.0f));
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        GMSGroundOverlay *groundOverlay = [GMSGroundOverlay groundOverlayWithBounds:bounds icon:nil];
+        MAGroundOverlay *groundOverlay = [MAGroundOverlay groundOverlayWithBounds:bounds icon:nil];
 
         NSString *groundOverlayId = [NSString stringWithFormat:@"groundoverlay_%@", idBase];
         [self.mapCtrl.objects setObject:groundOverlay forKey: groundOverlayId];
         groundOverlay.title = groundOverlayId;
-        groundOverlay.anchor = CGPointMake(0.5f, 0.5f);
+//        groundOverlay.anchor = CGPointMake(0.5f, 0.5f);
 
         if ([json valueForKey:@"zIndex"] && [json valueForKey:@"zIndex"] != [NSNull null]) {
-            groundOverlay.zIndex = [[json valueForKey:@"zIndex"] floatValue];
+//            groundOverlay.zIndex = [[json valueForKey:@"zIndex"] floatValue];
         }
 
         if ([json valueForKey:@"bearing"] && [json valueForKey:@"bearing"] != [NSNull null]) {
-            groundOverlay.bearing = [[json valueForKey:@"bearing"] floatValue];
+//            groundOverlay.bearing = [[json valueForKey:@"bearing"] floatValue];
         }
         if ([json valueForKey:@"anchor"] && [json valueForKey:@"anchor"] != [NSNull null]) {
-            NSArray *anchor = [json valueForKey:@"anchor"];
-            groundOverlay.anchor = CGPointMake([[anchor objectAtIndex:0] floatValue], [[anchor objectAtIndex:1] floatValue]);
+//            NSArray *anchor = [json valueForKey:@"anchor"];
+//            groundOverlay.anchor = CGPointMake([[anchor objectAtIndex:0] floatValue], [[anchor objectAtIndex:1] floatValue]);
         }
 
         BOOL isVisible = YES;
@@ -118,7 +118,7 @@
 
         // Since this plugin uses own touch-detection,
         // set NO to the tappable property.
-        groundOverlay.tappable = NO;
+//        groundOverlay.tappable = NO;
 
         __block PluginGroundOverlay *me = self;
 
@@ -138,7 +138,7 @@
 
                   if ([json valueForKey:@"opacity"] && [json valueForKey:@"opacity"] != [NSNull null]) {
                       CGFloat opacity = [[json valueForKey:@"opacity"] floatValue];
-                      groundOverlay.icon = [groundOverlay.icon imageByApplyingAlpha:opacity];
+                      [ groundOverlay setGroundOverlayWithBounds:groundOverlay.bounds icon:[groundOverlay.icon imageByApplyingAlpha:opacity]];
                   }
 
 
@@ -150,13 +150,13 @@
                   // points
                   NSMutableDictionary *properties = [[NSMutableDictionary alloc] init];
                   // bounds (pre-calculate for click detection)
-                  [properties setObject:groundOverlay.bounds  forKey:@"bounds"];
+//                  [properties setObject:groundOverlay.bounds  forKey:@"bounds"];
                   // isVisible
                   [properties setObject:[NSNumber numberWithBool:isVisible] forKey:@"isVisible"];
                   // isClickable
                   [properties setObject:[NSNumber numberWithBool:isClickable] forKey:@"isClickable"];
                   // zIndex
-                  [properties setObject:[NSNumber numberWithFloat:groundOverlay.zIndex] forKey:@"zIndex"];;
+//                  [properties setObject:[NSNumber numberWithFloat:groundOverlay.zIndex] forKey:@"zIndex"];;
                   [me.mapCtrl.objects setObject:properties forKey:propertyId];
 
                   //---------------------------
@@ -178,7 +178,7 @@
 
 }
 
-- (void)_setImage:(GMSGroundOverlay *)groundOverlay urlStr:(NSString *)urlStr completionHandler:(void (^)(BOOL succeeded))completionHandler {
+- (void)_setImage:(MAGroundOverlay *)groundOverlay urlStr:(NSString *)urlStr completionHandler:(void (^)(BOOL succeeded))completionHandler {
 
 
     NSRange range = [urlStr rangeOfString:@"http"];
@@ -253,7 +253,7 @@
                          }
 
                          dispatch_async(dispatch_get_main_queue(), ^{
-                           groundOverlay.icon = image;
+                             [groundOverlay setGroundOverlayWithBounds:groundOverlay.bounds icon:image];
                            completionHandler(YES);
                          });
 
@@ -280,7 +280,8 @@
             image = [UIImage imageNamed:urlStr];
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            groundOverlay.icon = [UIImage imageNamed:urlStr];
+//            groundOverlay.icon = [UIImage imageNamed:urlStr];
+            [groundOverlay setGroundOverlayWithBounds:groundOverlay.bounds icon:[UIImage imageNamed:urlStr]];
             completionHandler(YES);
         });
 
@@ -295,7 +296,7 @@
             }
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                groundOverlay.icon = image;
+                [groundOverlay setGroundOverlayWithBounds:groundOverlay.bounds icon:image];
                 completionHandler(YES);
             });
 
@@ -311,7 +312,7 @@
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         NSString *groundOverlayId = [command.arguments objectAtIndex:0];
-        GMSGroundOverlay *groundOverlay = [self.mapCtrl.objects objectForKey:groundOverlayId];
+        MAGroundOverlay *groundOverlay = [self.mapCtrl.objects objectForKey:groundOverlayId];
 
         //[self.imgCache removeObjectForKey:groundOverlayId];
 
@@ -339,7 +340,7 @@
     [self.mapCtrl.executeQueue addOperationWithBlock:^{
 
         NSString *key = [command.arguments objectAtIndex:0];
-        GMSGroundOverlay *groundOverlay = [self.mapCtrl.objects objectForKey:key];
+        MAGroundOverlay *groundOverlay = [self.mapCtrl.objects objectForKey:key];
         Boolean isVisible = [[command.arguments objectAtIndex:1] boolValue];
 
         // Update the property
@@ -373,7 +374,7 @@
     [self.mapCtrl.executeQueue addOperationWithBlock:^{
 
         NSString *groundOverlayId = [command.arguments objectAtIndex:0];
-        GMSGroundOverlay *groundOverlay = [self.mapCtrl.objects objectForKey:groundOverlayId];
+        MAGroundOverlay *groundOverlay = [self.mapCtrl.objects objectForKey:groundOverlayId];
         NSString *urlStr = [command.arguments objectAtIndex:1];
         if (urlStr) {
             __block PluginGroundOverlay *self_ = self;
@@ -405,21 +406,22 @@
 {
     [self.mapCtrl.executeQueue addOperationWithBlock:^{
         NSString *groundOverlayId = [command.arguments objectAtIndex:0];
-        GMSGroundOverlay *groundOverlay = [self.mapCtrl.objects objectForKey:groundOverlayId];
-        GMSMutablePath *path = [GMSMutablePath path];
+        MAGroundOverlay *groundOverlay = [self.mapCtrl.objects objectForKey:groundOverlayId];
+//        GMSMutablePath *path = [GMSMutablePath path];
 
-        NSArray *points = [command.arguments objectAtIndex:1];
-        int i = 0;
-        NSDictionary *latLng;
-        for (i = 0; i < points.count; i++) {
-            latLng = [points objectAtIndex:i];
-            [path addCoordinate:CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] floatValue], [[latLng objectForKey:@"lng"] floatValue])];
-        }
-        GMSCoordinateBounds *bounds;
-        bounds = [[GMSCoordinateBounds alloc] initWithPath:path];
+//        NSArray *points = [command.arguments objectAtIndex:1];
+//        int i = 0;
+//        NSDictionary *latLng;
+//        for (i = 0; i < points.count; i++) {
+//            latLng = [points objectAtIndex:i];
+//            [path addCoordinate:CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] floatValue], [[latLng objectForKey:@"lng"] floatValue])];
+//        }
+//        GMSCoordinateBounds *bounds;
+//        bounds = [[GMSCoordinateBounds alloc] initWithPath:path];
+        MACoordinateBounds bounds;
 
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [groundOverlay setBounds:bounds];
+            [groundOverlay setGroundOverlayWithBounds:bounds icon:groundOverlay.icon];
 
             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -436,11 +438,11 @@
 
     [self.mapCtrl.executeQueue addOperationWithBlock:^{
         NSString *groundOverlayId = [command.arguments objectAtIndex:0];
-        GMSGroundOverlay *groundOverlay = [self.mapCtrl.objects objectForKey:groundOverlayId];
+        MAGroundOverlay *groundOverlay = [self.mapCtrl.objects objectForKey:groundOverlayId];
         CGFloat opacity = [[command.arguments objectAtIndex:1] floatValue];
 
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            groundOverlay.opacity = opacity;
+//            groundOverlay.opacity = opacity;
 
             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -457,9 +459,9 @@
 
     [self.mapCtrl.executeQueue addOperationWithBlock:^{
         NSString *groundOverlayId = [command.arguments objectAtIndex:0];
-        GMSGroundOverlay *groundOverlay = [self.mapCtrl.objects objectForKey:groundOverlayId];
+        MAGroundOverlay *groundOverlay = [self.mapCtrl.objects objectForKey:groundOverlayId];
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            groundOverlay.bearing = [[command.arguments objectAtIndex:1] floatValue];
+//            groundOverlay.bearing = [[command.arguments objectAtIndex:1] floatValue];
             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         }];
@@ -478,7 +480,7 @@
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
 
       NSString *key = [command.arguments objectAtIndex:0];
-      //GMSGroundOverlay *groundOverlay = (GMSGroundOverlay *)[self.mapCtrl.objects objectForKey:key];
+      MAGroundOverlay *groundOverlay = (MAGroundOverlay *)[self.mapCtrl.objects objectForKey:key];
       Boolean isClickable = [[command.arguments objectAtIndex:1] boolValue];
 
       // Update the property
@@ -502,11 +504,11 @@
 
     [self.mapCtrl.executeQueue addOperationWithBlock:^{
         NSString *groundOverlayId = [command.arguments objectAtIndex:0];
-        GMSGroundOverlay *groundOverlay = [self.mapCtrl.objects objectForKey:groundOverlayId];
+        MAGroundOverlay *groundOverlay = [self.mapCtrl.objects objectForKey:groundOverlayId];
 
         NSInteger zIndex = [[command.arguments objectAtIndex:1] integerValue];
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [groundOverlay setZIndex:(int)zIndex];
+//            [groundOverlay setZIndex:(int)zIndex];
 
             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];

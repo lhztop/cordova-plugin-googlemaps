@@ -8,7 +8,7 @@
 
 #import "CordovaGoogleMaps.h"
 
-@interface PluginTileProvider : GMSTileLayer
+@interface PluginTileProvider : MATileOverlay
 @property (nonatomic) NSString *tileUrlFormat;
 @property (nonatomic) NSString *wwwPath;
 @property (nonatomic) UIView *webView;
@@ -20,7 +20,7 @@
 @property (nonatomic) NSOperationQueue *executeQueue;
 @property (nonatomic) dispatch_semaphore_t semaphore;
 - (id)initWithOptions:(NSDictionary *) options webView:(UIView *)webView;
-- (void)requestTileForX:(NSUInteger)x   y:(NSUInteger)y    zoom:(NSUInteger)zoom    receiver:(id<GMSTileReceiver>)receiver;
+//- (void)requestTileForX:(NSUInteger)x   y:(NSUInteger)y    zoom:(NSUInteger)zoom    receiver:(id<>)receiver;
 - (void)onGetTileUrlFromJS:(NSString *)urlKey tileUrl:(NSString *)tileUrl;
-- (void)downloadImageWithX:(NSUInteger)x y:(NSUInteger)y  zoom:(NSUInteger)zoom  url:(NSURL *)url receiver: (id<GMSTileReceiver>) receiver;
+//- (void)downloadImageWithX:(NSUInteger)x y:(NSUInteger)y  zoom:(NSUInteger)zoom  url:(NSURL *)url receiver: (id<GMSTileReceiver>) receiver;
 @end

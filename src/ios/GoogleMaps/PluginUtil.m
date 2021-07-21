@@ -151,205 +151,205 @@ static char CAAnimationGroupBlockKey;
 
 @implementation PluginUtil
 
-+ (BOOL)isPolygonContains:(GMSPath *)path coordinate:(CLLocationCoordinate2D)coordinate projection:(GMSProjection *)projection {
-  //-------------------------------------------------------------------
-  // Intersects using the Winding Number Algorithm
-  // http://www.nttpc.co.jp/company/r_and_d/technology/number_algorithm.html
-  //-------------------------------------------------------------------
-  int wn = 0;
-  GMSVisibleRegion visibleRegion = projection.visibleRegion;
-  GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithRegion:visibleRegion];
-  CGPoint sw = [projection pointForCoordinate:bounds.southWest];
+//+ (BOOL)isPolygonContains:(GMSPath *)path coordinate:(CLLocationCoordinate2D)coordinate projection:(GMSProjection *)projection {
+//  //-------------------------------------------------------------------
+//  // Intersects using the Winding Number Algorithm
+//  // http://www.nttpc.co.jp/company/r_and_d/technology/number_algorithm.html
+//  //-------------------------------------------------------------------
+//  int wn = 0;
+//  VisibleRegion visibleRegion = projection.visibleRegion;
+//  LatLngBounds *bounds = [[GMSCoordinateBounds alloc] initWithRegion:visibleRegion];
+//  CGPoint sw = [projection pointForCoordinate:bounds.southWest];
+//
+//  CGPoint touchPoint = [projection pointForCoordinate:coordinate];
+//  touchPoint.y = sw.y - touchPoint.y;
+//  double vt;
+//
+//  for (int i = 0; i < [path count] - 1; i++) {
+//    CGPoint a = [projection pointForCoordinate:[path coordinateAtIndex:i]];
+//    a.y = sw.y - a.y;
+//    CGPoint b = [projection pointForCoordinate:[path coordinateAtIndex:(i + 1)]];
+//    b.y = sw.y - b.y;
+//
+//    if ((a.y <= touchPoint.y) && (b.y > touchPoint.y)) {
+//      vt = (touchPoint.y - a.y) / (b.y - a.y);
+//      if (touchPoint.x < (a.x + (vt * (b.x - a.x)))) {
+//        wn++;
+//      }
+//    } else if ((a.y > touchPoint.y) && (b.y <= touchPoint.y)) {
+//      vt = (touchPoint.y - a.y) / (b.y - a.y);
+//      if (touchPoint.x < (a.x + (vt * (b.x - a.x)))) {
+//        wn--;
+//      }
+//    }
+//  }
+//
+//  return (wn != 0);
+//}
+//
+//+ (CLLocationCoordinate2D)isPointOnTheLine:(GMSPath *)path coordinate:(CLLocationCoordinate2D)coordinate projection:(GMSProjection *)projection {
+//  //-------------------------------------------------------------------
+//  // Intersection for non-geodesic line
+//  // http://movingahead.seesaa.net/article/299962216.html
+//  // http://www.softsurfer.com/Archive/algorithm_0104/algorithm_0104B.htm#Line-Plane
+//  //-------------------------------------------------------------------
+//  double Sx, Sy;
+//  CGPoint touchPoint = [projection pointForCoordinate:coordinate];
+//  CGPoint p0, p1;
+//
+//  p0 = [projection pointForCoordinate:[path coordinateAtIndex:0]];
+//  for (int i = 1; i < [path count]; i++) {
+//    p1 = [projection pointForCoordinate:[path coordinateAtIndex:i]];
+//    Sx = (touchPoint.x - p0.x) / (p1.x - p0.x);
+//    Sy = (touchPoint.y - p0.y) / (p1.y - p0.y);
+//    if (fabs(Sx - Sy) < 0.05 && Sx < 1 && Sy > 0) {
+//      return [path coordinateAtIndex:i];
+//    }
+//  }
+//  return kCLLocationCoordinate2DInvalid;
+//}
 
-  CGPoint touchPoint = [projection pointForCoordinate:coordinate];
-  touchPoint.y = sw.y - touchPoint.y;
-  double vt;
-
-  for (int i = 0; i < [path count] - 1; i++) {
-    CGPoint a = [projection pointForCoordinate:[path coordinateAtIndex:i]];
-    a.y = sw.y - a.y;
-    CGPoint b = [projection pointForCoordinate:[path coordinateAtIndex:(i + 1)]];
-    b.y = sw.y - b.y;
-
-    if ((a.y <= touchPoint.y) && (b.y > touchPoint.y)) {
-      vt = (touchPoint.y - a.y) / (b.y - a.y);
-      if (touchPoint.x < (a.x + (vt * (b.x - a.x)))) {
-        wn++;
-      }
-    } else if ((a.y > touchPoint.y) && (b.y <= touchPoint.y)) {
-      vt = (touchPoint.y - a.y) / (b.y - a.y);
-      if (touchPoint.x < (a.x + (vt * (b.x - a.x)))) {
-        wn--;
-      }
-    }
-  }
-
-  return (wn != 0);
-}
-
-+ (CLLocationCoordinate2D)isPointOnTheLine:(GMSPath *)path coordinate:(CLLocationCoordinate2D)coordinate projection:(GMSProjection *)projection {
-  //-------------------------------------------------------------------
-  // Intersection for non-geodesic line
-  // http://movingahead.seesaa.net/article/299962216.html
-  // http://www.softsurfer.com/Archive/algorithm_0104/algorithm_0104B.htm#Line-Plane
-  //-------------------------------------------------------------------
-  double Sx, Sy;
-  CGPoint touchPoint = [projection pointForCoordinate:coordinate];
-  CGPoint p0, p1;
-
-  p0 = [projection pointForCoordinate:[path coordinateAtIndex:0]];
-  for (int i = 1; i < [path count]; i++) {
-    p1 = [projection pointForCoordinate:[path coordinateAtIndex:i]];
-    Sx = (touchPoint.x - p0.x) / (p1.x - p0.x);
-    Sy = (touchPoint.y - p0.y) / (p1.y - p0.y);
-    if (fabs(Sx - Sy) < 0.05 && Sx < 1 && Sy > 0) {
-      return [path coordinateAtIndex:i];
-    }
-  }
-  return kCLLocationCoordinate2DInvalid;
-}
-
-+ (CLLocationCoordinate2D)isPointOnTheGeodesicLine:(GMSPath *)path coordinate:(CLLocationCoordinate2D)point threshold:(double)threshold projection:(GMSProjection *)projection {
-  
-  int fingerSize = 40;  // assume finger size is 20px
-  CGPoint touchPoint = [projection pointForCoordinate:CLLocationCoordinate2DMake(point.latitude, point.longitude)];
-  GMSCoordinateBounds *possibleBounds = [[GMSCoordinateBounds alloc] init];
-  possibleBounds = [possibleBounds includingCoordinate:[projection coordinateForPoint:CGPointMake(touchPoint.x - fingerSize, touchPoint.y - fingerSize)]];
-  possibleBounds = [possibleBounds includingCoordinate:[projection coordinateForPoint:CGPointMake(touchPoint.x + fingerSize, touchPoint.y + fingerSize)]];
-
-
-  //-------------------------------------------------------------------
-  // Intersection for geodesic line
-  // http://my-clip-devdiary.blogspot.com/2014/01/html5canvas.html
-  //-------------------------------------------------------------------
-  double trueDistance, testDistance1, testDistance2;
-  CGPoint p0, p1;
-  NSValue *value;
-  //CGPoint touchPoint = CGPointMake(point.latitude * 100000, point.longitude * 100000);
-  CLLocationCoordinate2D position1, position2;
-  CLLocationCoordinate2D start, finish;
-  NSMutableArray *points = [[NSMutableArray alloc] init];
-  BOOL firstTest = NO;
-
-  for (int i = 0; i < [path count]; i++) {
-    position1 = [path coordinateAtIndex:i];
-    p0 = CGPointMake(position1.latitude * 100000, position1.longitude * 100000);
-    [points addObject:[NSValue valueWithCGPoint:p0]];
-  }
-  for (int i = 0; i < [path count] - 1; i++) {
-    value = (NSValue *)[points objectAtIndex:i];
-    p0 = [value CGPointValue];
-
-    value = (NSValue *)[points objectAtIndex:(i+1)];
-    p1 = [value CGPointValue];
-
-    position1 = [path coordinateAtIndex:i];
-    position2 = [path coordinateAtIndex:(i + 1)];
-
-    trueDistance = GMSGeometryDistance(position1, position2);
-    testDistance1 = GMSGeometryDistance(position1, point);
-    testDistance2 = GMSGeometryDistance(point, position2);
-    // the distance is exactly same if the point is on the straight line
-    if (fabs(trueDistance - (testDistance1 + testDistance2)) < threshold) {
-      start = position1;
-      finish = position2;
-      firstTest = YES;
-      break;
-    }
-  }
-  
-  if (firstTest == NO) {
-    return kCLLocationCoordinate2DInvalid;
-  }
-  
-  //----------------------------------------------------------------
-  // Calculate waypoints from start to finish on geodesic line
-  // @ref http://jamesmccaffrey.wordpress.com/2011/04/17/drawing-a-geodesic-line-for-bing-maps-ajax/
-  //----------------------------------------------------------------
-  
-  // convert to radians
-  double lat1 = start.latitude * (M_PI / 180.0);
-  double lng1 = start.longitude * (M_PI / 180.0);
-  double lat2 = finish.latitude * (M_PI / 180.0);
-  double lng2 = finish.longitude * (M_PI / 180.0);
-  
-  double d = 2 * asin(sqrt(pow((sin((lat1 - lat2) / 2)), 2) +
-      cos(lat1) * cos(lat2) * pow((sin((lng1 - lng2) / 2)), 2)));
-  GMSMutablePath *wayPoints = [GMSMutablePath path];
-  double f = 0.00000000f; // fraction of the curve
-  double finc = 0.01000000f; // fraction increment
-
-  while (f <= 1.00000000f) {
-    double A = sin((1.0 - f) * d) / sin(d);
-    double B = sin(f * d) / sin(d);
-
-    double x = A * cos(lat1) * cos(lng1) + B * cos(lat2) * cos(lng2);
-    double y = A * cos(lat1) * sin(lng1) + B * cos(lat2) * sin(lng2);
-    double z = A * sin(lat1) + B * sin(lat2);
-    double lat = atan2(z, sqrt((x*x) + (y*y)));
-    double lng = atan2(y, x);
-
-    CLLocationCoordinate2D wp = CLLocationCoordinate2DMake(lat / (M_PI / 180.0), lng / ( M_PI / 180.0));
-    if ([possibleBounds containsCoordinate:wp]) {
-      [wayPoints addCoordinate:wp];
-    }
-
-    f += finc;
-  } // while
-  
-  // break into waypoints with negative longitudes and those with positive longitudes
-  GMSMutablePath *negLons = [GMSMutablePath path]; // lat-lons where the lon part is negative
-  GMSMutablePath *posLons = [GMSMutablePath path];
-  GMSMutablePath *connect = [GMSMutablePath path];
-
-  for (int i = 0; i < [wayPoints count]; ++i) {
-    if ([wayPoints coordinateAtIndex:i].longitude <= 0.0f)
-      [negLons addCoordinate:[wayPoints coordinateAtIndex:i]];
-    else
-      [posLons addCoordinate:[wayPoints coordinateAtIndex:i]];
-  }
-
-  // we may have to connect over 0.0 longitude
-  for (int i = 0; i < [wayPoints count] - 1; ++i) {
-    if (([wayPoints coordinateAtIndex:i].longitude <= 0.0f && [wayPoints coordinateAtIndex:(i + 1)].longitude >= 0.0f) ||
-        ([wayPoints coordinateAtIndex:i].longitude >= 0.0f && [wayPoints coordinateAtIndex:(i + 1)].longitude <= 0.0f)) {
-      if ((fabs([wayPoints coordinateAtIndex:i].longitude) + fabs([wayPoints coordinateAtIndex:(i + 1)].longitude)) < 100.0f) {
-        [connect addCoordinate:[wayPoints coordinateAtIndex:i]];
-        [connect addCoordinate:[wayPoints coordinateAtIndex:(i + 1)]];
-      }
-    }
-  }
-  
-  GMSMutablePath *inspectPoints = [GMSMutablePath path];
-  if ([negLons count] > 2) {
-    for (int i = 0; i < [negLons count]; i++) {
-      [inspectPoints addCoordinate:[negLons coordinateAtIndex:i]];
-    }
-  }
-  if ([posLons count] > 2) {
-    for (int i = 0; i < [posLons count]; i++) {
-      [inspectPoints addCoordinate:[posLons coordinateAtIndex:i]];
-    }
-  }
-  if ([connect count] > 2) {
-    for (int i = 0; i < [connect count]; i++) {
-      [inspectPoints addCoordinate:[connect coordinateAtIndex:i]];
-    }
-  }
-  
-  double minDistance = 999999999;
-  double distance;
-  CLLocationCoordinate2D mostClosePoint;
-
-  for (int i = 0; i < [inspectPoints count]; i++) {
-    distance = GMSGeometryDistance([inspectPoints coordinateAtIndex:i], point);
-    if (distance < minDistance) {
-      minDistance = distance;
-      mostClosePoint = [inspectPoints coordinateAtIndex:i];
-    }
-  }
-  return mostClosePoint;
-}
+//+ (CLLocationCoordinate2D)isPointOnTheGeodesicLine:(GMSPath *)path coordinate:(CLLocationCoordinate2D)point threshold:(double)threshold projection:(GMSProjection *)projection {
+//
+//  int fingerSize = 40;  // assume finger size is 20px
+//  CGPoint touchPoint = [projection pointForCoordinate:CLLocationCoordinate2DMake(point.latitude, point.longitude)];
+//  GMSCoordinateBounds *possibleBounds = [[GMSCoordinateBounds alloc] init];
+//  possibleBounds = [possibleBounds includingCoordinate:[projection coordinateForPoint:CGPointMake(touchPoint.x - fingerSize, touchPoint.y - fingerSize)]];
+//  possibleBounds = [possibleBounds includingCoordinate:[projection coordinateForPoint:CGPointMake(touchPoint.x + fingerSize, touchPoint.y + fingerSize)]];
+//
+//
+//  //-------------------------------------------------------------------
+//  // Intersection for geodesic line
+//  // http://my-clip-devdiary.blogspot.com/2014/01/html5canvas.html
+//  //-------------------------------------------------------------------
+//  double trueDistance, testDistance1, testDistance2;
+//  CGPoint p0, p1;
+//  NSValue *value;
+//  //CGPoint touchPoint = CGPointMake(point.latitude * 100000, point.longitude * 100000);
+//  CLLocationCoordinate2D position1, position2;
+//  CLLocationCoordinate2D start, finish;
+//  NSMutableArray *points = [[NSMutableArray alloc] init];
+//  BOOL firstTest = NO;
+//
+//  for (int i = 0; i < [path count]; i++) {
+//    position1 = [path coordinateAtIndex:i];
+//    p0 = CGPointMake(position1.latitude * 100000, position1.longitude * 100000);
+//    [points addObject:[NSValue valueWithCGPoint:p0]];
+//  }
+//  for (int i = 0; i < [path count] - 1; i++) {
+//    value = (NSValue *)[points objectAtIndex:i];
+//    p0 = [value CGPointValue];
+//
+//    value = (NSValue *)[points objectAtIndex:(i+1)];
+//    p1 = [value CGPointValue];
+//
+//    position1 = [path coordinateAtIndex:i];
+//    position2 = [path coordinateAtIndex:(i + 1)];
+//
+//    trueDistance = GMSGeometryDistance(position1, position2);
+//    testDistance1 = GMSGeometryDistance(position1, point);
+//    testDistance2 = GMSGeometryDistance(point, position2);
+//    // the distance is exactly same if the point is on the straight line
+//    if (fabs(trueDistance - (testDistance1 + testDistance2)) < threshold) {
+//      start = position1;
+//      finish = position2;
+//      firstTest = YES;
+//      break;
+//    }
+//  }
+//
+//  if (firstTest == NO) {
+//    return kCLLocationCoordinate2DInvalid;
+//  }
+//
+//  //----------------------------------------------------------------
+//  // Calculate waypoints from start to finish on geodesic line
+//  // @ref http://jamesmccaffrey.wordpress.com/2011/04/17/drawing-a-geodesic-line-for-bing-maps-ajax/
+//  //----------------------------------------------------------------
+//
+//  // convert to radians
+//  double lat1 = start.latitude * (M_PI / 180.0);
+//  double lng1 = start.longitude * (M_PI / 180.0);
+//  double lat2 = finish.latitude * (M_PI / 180.0);
+//  double lng2 = finish.longitude * (M_PI / 180.0);
+//
+//  double d = 2 * asin(sqrt(pow((sin((lat1 - lat2) / 2)), 2) +
+//      cos(lat1) * cos(lat2) * pow((sin((lng1 - lng2) / 2)), 2)));
+//  GMSMutablePath *wayPoints = [GMSMutablePath path];
+//  double f = 0.00000000f; // fraction of the curve
+//  double finc = 0.01000000f; // fraction increment
+//
+//  while (f <= 1.00000000f) {
+//    double A = sin((1.0 - f) * d) / sin(d);
+//    double B = sin(f * d) / sin(d);
+//
+//    double x = A * cos(lat1) * cos(lng1) + B * cos(lat2) * cos(lng2);
+//    double y = A * cos(lat1) * sin(lng1) + B * cos(lat2) * sin(lng2);
+//    double z = A * sin(lat1) + B * sin(lat2);
+//    double lat = atan2(z, sqrt((x*x) + (y*y)));
+//    double lng = atan2(y, x);
+//
+//    CLLocationCoordinate2D wp = CLLocationCoordinate2DMake(lat / (M_PI / 180.0), lng / ( M_PI / 180.0));
+//    if ([possibleBounds containsCoordinate:wp]) {
+//      [wayPoints addCoordinate:wp];
+//    }
+//
+//    f += finc;
+//  } // while
+//
+//  // break into waypoints with negative longitudes and those with positive longitudes
+//  GMSMutablePath *negLons = [GMSMutablePath path]; // lat-lons where the lon part is negative
+//  GMSMutablePath *posLons = [GMSMutablePath path];
+//  GMSMutablePath *connect = [GMSMutablePath path];
+//
+//  for (int i = 0; i < [wayPoints count]; ++i) {
+//    if ([wayPoints coordinateAtIndex:i].longitude <= 0.0f)
+//      [negLons addCoordinate:[wayPoints coordinateAtIndex:i]];
+//    else
+//      [posLons addCoordinate:[wayPoints coordinateAtIndex:i]];
+//  }
+//
+//  // we may have to connect over 0.0 longitude
+//  for (int i = 0; i < [wayPoints count] - 1; ++i) {
+//    if (([wayPoints coordinateAtIndex:i].longitude <= 0.0f && [wayPoints coordinateAtIndex:(i + 1)].longitude >= 0.0f) ||
+//        ([wayPoints coordinateAtIndex:i].longitude >= 0.0f && [wayPoints coordinateAtIndex:(i + 1)].longitude <= 0.0f)) {
+//      if ((fabs([wayPoints coordinateAtIndex:i].longitude) + fabs([wayPoints coordinateAtIndex:(i + 1)].longitude)) < 100.0f) {
+//        [connect addCoordinate:[wayPoints coordinateAtIndex:i]];
+//        [connect addCoordinate:[wayPoints coordinateAtIndex:(i + 1)]];
+//      }
+//    }
+//  }
+//
+//  GMSMutablePath *inspectPoints = [GMSMutablePath path];
+//  if ([negLons count] > 2) {
+//    for (int i = 0; i < [negLons count]; i++) {
+//      [inspectPoints addCoordinate:[negLons coordinateAtIndex:i]];
+//    }
+//  }
+//  if ([posLons count] > 2) {
+//    for (int i = 0; i < [posLons count]; i++) {
+//      [inspectPoints addCoordinate:[posLons coordinateAtIndex:i]];
+//    }
+//  }
+//  if ([connect count] > 2) {
+//    for (int i = 0; i < [connect count]; i++) {
+//      [inspectPoints addCoordinate:[connect coordinateAtIndex:i]];
+//    }
+//  }
+//
+//  double minDistance = 999999999;
+//  double distance;
+//  CLLocationCoordinate2D mostClosePoint;
+//
+//  for (int i = 0; i < [inspectPoints count]; i++) {
+//    distance = GMSGeometryDistance([inspectPoints coordinateAtIndex:i], point);
+//    if (distance < minDistance) {
+//      minDistance = distance;
+//      mostClosePoint = [inspectPoints coordinateAtIndex:i];
+//    }
+//  }
+//  return mostClosePoint;
+//}
 
 + (BOOL) isInDebugMode
 {
@@ -360,30 +360,61 @@ static char CAAnimationGroupBlockKey;
     #endif
 }
 
-+ (BOOL)isCircleContains:(GMSCircle *)circle coordinate:(CLLocationCoordinate2D)point {
-    CLLocationDistance distance = GMSGeometryDistance(circle.position, point);
++ (MACoordinateBounds)getBoundsFromPoints:(NSArray *)latLngList {
+    CLLocationCoordinate2D ne = CLLocationCoordinate2DMake(0.0, 0.0);
+    CLLocationCoordinate2D sw = CLLocationCoordinate2DMake(0.0, 0.0);
+    if (latLngList.count <= 0) {
+        return MACoordinateBoundsMake( ne, sw);
+    }
+    NSDictionary *latLng = [latLngList objectAtIndex:0];
+    ne = CLLocationCoordinate2DMake([[latLng valueForKey:@"lat"] doubleValue], [[latLng valueForKey:@"lng"] doubleValue]);
+    sw = CLLocationCoordinate2DMake([[latLng valueForKey:@"lat"] doubleValue], [[latLng valueForKey:@"lng"] doubleValue]);
+    for (int i = 1; i < [latLngList count]; i++) {
+      latLng = [latLngList objectAtIndex:i];
+      double latitude = [[latLng valueForKey:@"lat"] doubleValue];
+      double longitude = [[latLng valueForKey:@"lng"] doubleValue];
+        if (ne.longitude < longitude) {
+            ne.longitude = longitude;
+        }
+        if (ne.latitude < latitude) {
+            ne.latitude = latitude;
+        }
+        if (sw.latitude > latitude) {
+            sw.latitude = latitude;
+        }
+        if (sw.longitude > longitude) {
+            sw.longitude = longitude;
+        }
+    }
+    return MACoordinateBoundsMake( ne, sw);
+}
+
++ (CLLocationCoordinate2D)centerOfBounds:(MACoordinateBounds)bounds {
+    return CLLocationCoordinate2DMake((bounds.northEast.latitude + bounds.southWest.latitude)/2, (bounds.northEast.longitude + bounds.southWest.longitude)/2);
+}
+
+
++ (BOOL)isCircleContains:(MACircle *)circle coordinate:(CLLocationCoordinate2D)point {
+    MAMapPoint p = MAMapPointForCoordinate(point);
+    MAMapPoint pc = MAMapPointForCoordinate(circle.coordinate);
+    CLLocationDistance distance = MAMetersBetweenMapPoints(pc, p);
     return (distance < circle.radius);
 }
 
-+ (GMSMutablePath *)getMutablePathFromCircle:(CLLocationCoordinate2D)center radius:(double)radius {
++ (MACoordinateBounds)getMutablePathFromCircle:(CLLocationCoordinate2D)center radius:(double)radius {
 
     double d2r = M_PI / 180;   // degrees to radians
     double r2d = 180 / M_PI;   // radians to degrees
-    double earthsradius = 3963.189; // 3963 is the radius of the earth in miles
-    radius = radius * 0.000621371192; // convert to mile
+//    double earthsradius = 3963.189; // 3963 is the radius of the earth in miles
+    double earthsradius = 6371.393; // earth radius in km
+    radius = radius * 0.001; // convert to km
 
     // find the raidus in lat/lon
     double rlat = (radius / earthsradius) * r2d;
     double rlng = rlat / cos(center.latitude * d2r);
 
-    GMSMutablePath *mutablePath = [[GMSMutablePath alloc] init];
-    double ex, ey;
-    for (int i = 0; i < 360; i++) {
-      ey = center.longitude + (rlng * cos(i * d2r)); // center a + radius x * cos(theta)
-      ex = center.latitude + (rlat * sin(i * d2r)); // center b + radius y * sin(theta)
-      [mutablePath addLatitude:ex longitude:ey];
-    }
-    return mutablePath;
+    
+    return MACoordinateBoundsMake(CLLocationCoordinate2DMake(center.latitude - rlat, center.longitude - rlng), CLLocationCoordinate2DMake(center.latitude + rlat, center.longitude + rlng));
 }
 
 + (NSString *)getAbsolutePathFromCDVFilePath:(UIView*)webView cdvFilePath:(NSString *)cdvFilePath {
