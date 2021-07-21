@@ -9,10 +9,11 @@
 #import <Cordova/CDV.h>
 #import <UIKit/UIKit.h>
 #import <math.h>
-#import "PluginUtil.h"
-#import "IPluginProtocol.h"
+//#import "PluginUtil.h"
+//#import "IPluginProtocol.h"
 #import "PluginObjects.h"
-#import <GoogleMaps/GoogleMaps.h>
+// #import <GoogleMaps/GoogleMaps.h>
+#import <AMapNaviKit/MAMapKit.h>
 
 @interface PluginViewController : UIViewController
 

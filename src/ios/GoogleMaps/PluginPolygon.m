@@ -24,7 +24,7 @@
       key = [keys objectAtIndex:i];
       if ([key hasPrefix:@"polygon_property"]) {
         key = [key stringByReplacingOccurrencesOfString:@"_property" withString:@""];
-        GMSPolygon *polygon = (GMSPolygon *)[self.mapCtrl.objects objectForKey:key];
+        MAPolygon *polygon = (MAPolygon *)[self.mapCtrl.objects objectForKey:key];
         polygon.map = nil;
         polygon = nil;
       }
@@ -57,43 +57,43 @@
   // Parse the polygonOptions
   NSDictionary *json = [command.arguments objectAtIndex:1];
   NSString *idBase = [command.arguments objectAtIndex:2];
-
-  GMSMutablePath *mutablePath = [GMSMutablePath path];
+  
   NSArray *points = [json objectForKey:@"points"];
-  int i = 0;
-  NSDictionary *latLng;
-  for (i = 0; i < points.count; i++) {
-      latLng = [points objectAtIndex:i];
-      [mutablePath addCoordinate:CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] doubleValue], [[latLng objectForKey:@"lng"] doubleValue])];
-  }
-
+  
   // Create paths of the hole property if specified.
-  NSMutableArray *holePaths = [NSMutableArray array];
-  if ([json valueForKey:@"holes"] && [json valueForKey:@"holes"] != [NSNull null]) {
-      NSArray *holes = [json objectForKey:@"holes"];
-      NSArray *latLngArray;
-      NSDictionary *latLng;
-      int j;
-
-      for (i = 0; i < holes.count; i++) {
-          latLngArray = [holes objectAtIndex:i];
-          GMSMutablePath *holePath = [GMSMutablePath path];
-          for (j = 0; j < latLngArray.count; j++) {
-              latLng = [latLngArray objectAtIndex:j];
-              [holePath addLatitude:[[latLng objectForKey:@"lat"] doubleValue] longitude:[[latLng objectForKey:@"lng"] doubleValue]];
-          }
-          [holePaths addObject:holePath];
-      }
-  }
+//  NSMutableArray *holePaths = [NSMutableArray array];
+//  if ([json valueForKey:@"holes"] && [json valueForKey:@"holes"] != [NSNull null]) {
+//      NSArray *holes = [json objectForKey:@"holes"];
+//      NSArray *latLngArray;
+//      NSDictionary *latLng;
+//      int j;
+//
+//      for (i = 0; i < holes.count; i++) {
+//          latLngArray = [holes objectAtIndex:i];
+//          GMSMutablePath *holePath = [GMSMutablePath path];
+//          for (j = 0; j < latLngArray.count; j++) {
+//              latLng = [latLngArray objectAtIndex:j];
+//              [holePath addLatitude:[[latLng objectForKey:@"lat"] doubleValue] longitude:[[latLng objectForKey:@"lng"] doubleValue]];
+//          }
+//          [holePaths addObject:holePath];
+//      }
+//  }
 
   [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-
+    CLLocationCoordinate2D mutablePath[points.count];
+    int i = 0;
+    NSDictionary *latLng;
+    for (i = 0; i < points.count; i++) {
+        latLng = [points objectAtIndex:i];
+        mutablePath[i].latitude = [[latLng objectForKey:@"lat"] doubleValue];
+        mutablePath[i].longitude = [[latLng objectForKey:@"lng"] doubleValue];
+    }
       // Create the polygon, and assign it to the map on UI thread.
-      GMSPolygon *polygon = [GMSPolygon polygonWithPath:mutablePath];
+    MAPolygon *polygon = [MAPolygon polygonWithCoordinates:mutablePath count:points.count];
 
-      if (holePaths != nil) {
-        polygon.holes = holePaths;
-      }
+//      if (holePaths != nil) {
+//        polygon.holes = holePaths;
+//      }
 
       BOOL isVisible = YES;
 
@@ -113,20 +113,20 @@
         isClickable = YES;
       }
       if ([[json valueForKey:@"geodesic"] boolValue]) {
-        polygon.geodesic = YES;
+//        polygon.geodesic = YES;
       }
       NSArray *rgbColor = [json valueForKey:@"fillColor"];
-      polygon.fillColor = [rgbColor parsePluginColor];
+//      polygon.fillColor = [rgbColor parsePluginColor];
 
       rgbColor = [json valueForKey:@"strokeColor"];
-      polygon.strokeColor = [rgbColor parsePluginColor];
-
-      polygon.strokeWidth = [[json valueForKey:@"strokeWidth"] floatValue];
-      polygon.zIndex = [[json valueForKey:@"zIndex"] floatValue];
+//      polygon.strokeColor = [rgbColor parsePluginColor];
+//
+//      polygon.strokeWidth = [[json valueForKey:@"strokeWidth"] floatValue];
+//      polygon.zIndex = [[json valueForKey:@"zIndex"] floatValue];
 
       // Since this plugin provide own click detection,
       // disable default clickable feature.
-      polygon.tappable = NO;
+//      polygon.tappable = NO;
 
       // Register polygon to the overlayManager.
       NSString *id = [NSString stringWithFormat:@"polygon_%@", idBase];
@@ -143,19 +143,19 @@
 
           // points
           NSMutableDictionary *properties = [[NSMutableDictionary alloc] init];
-          [properties setObject:mutablePath forKey:@"mutablePath"];
-          // holes
-          [properties setObject:holePaths forKey:@"holePaths"];
+//          [properties setObject:mutablePath forKey:@"mutablePath"];
+//          // holes
+//          [properties setObject:holePaths forKey:@"holePaths"];
           // bounds (pre-calculate for click detection)
-          [properties setObject:[[GMSCoordinateBounds alloc] initWithPath:mutablePath] forKey:@"bounds"];
+//          [properties setObject:[[polygon getCoordinates:<#(CLLocationCoordinate2D *)#> range:<#(NSRange)#> alloc] initWithPath:mutablePath] forKey:@"bounds"];
           // isVisible
           [properties setObject:[NSNumber numberWithBool:isVisible] forKey:@"isVisible"];
           // isClickable
           [properties setObject:[NSNumber numberWithBool:isClickable] forKey:@"isClickable"];
-          // geodesic
-          [properties setObject:[NSNumber numberWithBool:polygon.geodesic] forKey:@"geodesic"];
-          // zIndex
-          [properties setObject:[NSNumber numberWithDouble:polygon.zIndex] forKey:@"zIndex"];;
+//          // geodesic
+//          [properties setObject:[NSNumber numberWithBool:polygon.geodesic] forKey:@"geodesic"];
+//          // zIndex
+//          [properties setObject:[NSNumber numberWithDouble:polygon.zIndex] forKey:@"zIndex"];;
           [self.mapCtrl.objects setObject:properties forKey:propertyId];
 
 
@@ -181,7 +181,7 @@
 
       NSString *polygonKey = [command.arguments objectAtIndex:0];
       NSInteger index = [[command.arguments objectAtIndex:1] integerValue];
-      GMSPolygon *polygon = (GMSPolygon *)[self.mapCtrl.objects objectForKey:polygonKey];
+      MAPolygon *polygon = (MAPolygon *)[self.mapCtrl.objects objectForKey:polygonKey];
       NSArray *holes = [command.arguments objectAtIndex:2];
 
 
@@ -189,32 +189,32 @@
       NSString *propertyId = [polygonKey stringByReplacingOccurrencesOfString:@"polygon_" withString:@"polygon_property_"];
       NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:
                                          [self.mapCtrl.objects objectForKey:propertyId]];
-      NSMutableArray *holePaths = (NSMutableArray *)[properties objectForKey:@"holePaths"];
-
-
-      // Insert a hole into the holes property
-      NSArray *latLngArray;
-      NSDictionary *latLng;
-      int i;
-
-      GMSMutablePath *path = [GMSMutablePath path];
-      for (i = 0; i < [holes count]; i++) {
-        latLng = [latLngArray objectAtIndex:i];
-        [path addLatitude:[[latLng objectForKey:@"lat"] doubleValue] longitude:[[latLng objectForKey:@"lng"] doubleValue]];
-      }
-      [holePaths insertObject:path atIndex:index];
-
-      // Save the property
-      [properties setObject:holePaths forKey:@"holePaths"];
-
-
-      // Apply to the polygon on UI thread.
-      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        polygon.holes = holePaths;
-
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-      }];
+//      NSMutableArray *holePaths = (NSMutableArray *)[properties objectForKey:@"holePaths"];
+//
+//
+//      // Insert a hole into the holes property
+//      NSArray *latLngArray;
+//      NSDictionary *latLng;
+//      int i;
+//
+//      GMSMutablePath *path = [GMSMutablePath path];
+//      for (i = 0; i < [holes count]; i++) {
+//        latLng = [latLngArray objectAtIndex:i];
+//        [path addLatitude:[[latLng objectForKey:@"lat"] doubleValue] longitude:[[latLng objectForKey:@"lng"] doubleValue]];
+//      }
+//      [holePaths insertObject:path atIndex:index];
+//
+//      // Save the property
+//      [properties setObject:holePaths forKey:@"holePaths"];
+//
+//
+//      // Apply to the polygon on UI thread.
+//      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+//        polygon.holes = holePaths;
+//
+//        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+//        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+//      }];
 
     }];
 
@@ -237,15 +237,15 @@
       NSString *propertyId = [polygonKey stringByReplacingOccurrencesOfString:@"polygon_" withString:@"polygon_property_"];
       NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:
                                          [self.mapCtrl.objects objectForKey:propertyId]];
-      NSMutableArray *holePaths = (NSMutableArray *)[properties objectForKey:@"holePaths"];
-
-      // Insert a point into the specified hole
-      GMSMutablePath *path = [holePaths objectAtIndex:holeIndex];
-      [path removeCoordinateAtIndex:pointIndex];
-      [holePaths setObject:path atIndexedSubscript:holeIndex];
-
-      // Save the property
-      [properties setObject:holePaths forKey:@"holePaths"];
+//      NSMutableArray *holePaths = (NSMutableArray *)[properties objectForKey:@"holePaths"];
+//
+//      // Insert a point into the specified hole
+//      GMSMutablePath *path = [holePaths objectAtIndex:holeIndex];
+//      [path removeCoordinateAtIndex:pointIndex];
+//      [holePaths setObject:path atIndexedSubscript:holeIndex];
+//
+//      // Save the property
+//      [properties setObject:holePaths forKey:@"holePaths"];
 
       CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
       [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -260,7 +260,7 @@
       NSString *polygonKey = [command.arguments objectAtIndex:0];
       NSInteger holeIndex = [[command.arguments objectAtIndex:1] integerValue];
       NSInteger pointIndex = [[command.arguments objectAtIndex:2] integerValue];
-      GMSPolygon *polygon = (GMSPolygon *)[self.mapCtrl.objects objectForKey:polygonKey];
+      MAPolygon *polygon = (MAPolygon *)[self.mapCtrl.objects objectForKey:polygonKey];
       NSDictionary *latLng = [command.arguments objectAtIndex:3];
 
 
@@ -268,25 +268,25 @@
       NSString *propertyId = [polygonKey stringByReplacingOccurrencesOfString:@"polygon_" withString:@"polygon_property_"];
       NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:
                                          [self.mapCtrl.objects objectForKey:propertyId]];
-      NSMutableArray *holePaths = (NSMutableArray *)[properties objectForKey:@"holePaths"];
+//      NSMutableArray *holePaths = (NSMutableArray *)[properties objectForKey:@"holePaths"];
 
-      // Insert a point into the specified hole
-      GMSMutablePath *path = [holePaths objectAtIndex:holeIndex];
-      CLLocationCoordinate2D position = CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] doubleValue], [[latLng objectForKey:@"lng"] doubleValue]);
-      [path replaceCoordinateAtIndex:pointIndex withCoordinate:position];
-      [holePaths setObject:path atIndexedSubscript:holeIndex];
+//      // Insert a point into the specified hole
+//      GMSMutablePath *path = [holePaths objectAtIndex:holeIndex];
+//      CLLocationCoordinate2D position = CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] doubleValue], [[latLng objectForKey:@"lng"] doubleValue]);
+//      [path replaceCoordinateAtIndex:pointIndex withCoordinate:position];
+//      [holePaths setObject:path atIndexedSubscript:holeIndex];
 
-      // Save the property
-      [properties setObject:holePaths forKey:@"holePaths"];
-
-
-      // Apply to the polygon on UI thread.
-      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        polygon.holes = holePaths;
-
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-      }];
+//      // Save the property
+//      [properties setObject:holePaths forKey:@"holePaths"];
+//
+//
+//      // Apply to the polygon on UI thread.
+//      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+//        polygon.holes = holePaths;
+//
+//        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+//        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+//      }];
 
   }];
 }
@@ -294,55 +294,55 @@
 -(void)setHoles:(CDVInvokedUrlCommand *)command
 {
 
-  [self.mapCtrl.executeQueue addOperationWithBlock:^{
-
-      NSString *polygonKey = [command.arguments objectAtIndex:0];
-      NSArray *holeList = [command.arguments objectAtIndex:1];
-      GMSMutablePath *hole;
-
-      GMSPolygon *polygon = (GMSPolygon *)[self.mapCtrl.objects objectForKey:polygonKey];
-      NSDictionary *latLng;
-
-
-      // Get properties
-      NSString *propertyId = [polygonKey stringByReplacingOccurrencesOfString:@"polygon_" withString:@"polygon_property_"];
-      NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:
-                                         [self.mapCtrl.objects objectForKey:propertyId]];
-
-      // Remove current holes
-      NSMutableArray *holePaths = (NSMutableArray *)[properties objectForKey:@"holePaths"];
-      for (int i = 0; i < holePaths.count; i++) {
-        hole = [holePaths objectAtIndex:i];
-        [hole removeAllCoordinates];
-      }
-      [holePaths removeAllObjects];
-
-      // update all holes
-      GMSMutablePath *path;
-      NSArray *holePositions;
-      for (int i = 0; i < holeList.count; i++) {
-        path = [GMSMutablePath path];
-        holePositions = [holeList objectAtIndex:i];
-        for (int j = 0; j < holePositions.count; j++) {
-          latLng = [holePositions objectAtIndex:j];
-          [path addCoordinate:CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] doubleValue], [[latLng objectForKey:@"lng"] doubleValue])];
-        }
-        [holePaths addObject:path];
-      }
-
-      // Save the property
-      [properties setObject:holePaths forKey:@"holePaths"];
-
-
-      // Apply to the polygon on UI thread.
-      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-          polygon.holes = holePaths;
-
-          CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-      }];
-
-  }];
+//  [self.mapCtrl.executeQueue addOperationWithBlock:^{
+//
+//      NSString *polygonKey = [command.arguments objectAtIndex:0];
+//      NSArray *holeList = [command.arguments objectAtIndex:1];
+//      GMSMutablePath *hole;
+//
+//      GMSPolygon *polygon = (GMSPolygon *)[self.mapCtrl.objects objectForKey:polygonKey];
+//      NSDictionary *latLng;
+//
+//
+//      // Get properties
+//      NSString *propertyId = [polygonKey stringByReplacingOccurrencesOfString:@"polygon_" withString:@"polygon_property_"];
+//      NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:
+//                                         [self.mapCtrl.objects objectForKey:propertyId]];
+//
+//      // Remove current holes
+//      NSMutableArray *holePaths = (NSMutableArray *)[properties objectForKey:@"holePaths"];
+//      for (int i = 0; i < holePaths.count; i++) {
+//        hole = [holePaths objectAtIndex:i];
+//        [hole removeAllCoordinates];
+//      }
+//      [holePaths removeAllObjects];
+//
+//      // update all holes
+//      GMSMutablePath *path;
+//      NSArray *holePositions;
+//      for (int i = 0; i < holeList.count; i++) {
+//        path = [GMSMutablePath path];
+//        holePositions = [holeList objectAtIndex:i];
+//        for (int j = 0; j < holePositions.count; j++) {
+//          latLng = [holePositions objectAtIndex:j];
+//          [path addCoordinate:CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] doubleValue], [[latLng objectForKey:@"lng"] doubleValue])];
+//        }
+//        [holePaths addObject:path];
+//      }
+//
+//      // Save the property
+//      [properties setObject:holePaths forKey:@"holePaths"];
+//
+//
+//      // Apply to the polygon on UI thread.
+//      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+//          polygon.holes = holePaths;
+//
+//          CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+//          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+//      }];
+//
+//  }];
 }
 
 -(void)insertPointOfHoleAt:(CDVInvokedUrlCommand *)command
@@ -353,7 +353,7 @@
       NSString *polygonKey = [command.arguments objectAtIndex:0];
       NSInteger holeIndex = [[command.arguments objectAtIndex:1] integerValue];
       NSInteger pointIndex = [[command.arguments objectAtIndex:2] integerValue];
-      GMSPolygon *polygon = (GMSPolygon *)[self.mapCtrl.objects objectForKey:polygonKey];
+      MAPolygon *polygon = (MAPolygon *)[self.mapCtrl.objects objectForKey:polygonKey];
       NSDictionary *latLng = [command.arguments objectAtIndex:3];
 
 
@@ -361,25 +361,25 @@
       NSString *propertyId = [polygonKey stringByReplacingOccurrencesOfString:@"polygon_" withString:@"polygon_property_"];
       NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:
                                          [self.mapCtrl.objects objectForKey:propertyId]];
-      NSMutableArray *holePaths = (NSMutableArray *)[properties objectForKey:@"holePaths"];
-
-      // Insert a point into the specified hole
-      GMSMutablePath *path = [holePaths objectAtIndex:holeIndex];
-      CLLocationCoordinate2D position = CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] doubleValue], [[latLng objectForKey:@"lng"] doubleValue]);
-      [path insertCoordinate:position atIndex:pointIndex];
-      [holePaths setObject:path atIndexedSubscript:holeIndex];
-
-      // Save the property
-      [properties setObject:holePaths forKey:@"holePaths"];
-
-
-      // Apply to the polygon on UI thread.
-      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-          polygon.holes = holePaths;
-
-          CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-      }];
+//      NSMutableArray *holePaths = (NSMutableArray *)[properties objectForKey:@"holePaths"];
+//
+//      // Insert a point into the specified hole
+//      GMSMutablePath *path = [holePaths objectAtIndex:holeIndex];
+//      CLLocationCoordinate2D position = CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] doubleValue], [[latLng objectForKey:@"lng"] doubleValue]);
+//      [path insertCoordinate:position atIndex:pointIndex];
+//      [holePaths setObject:path atIndexedSubscript:holeIndex];
+//
+//      // Save the property
+//      [properties setObject:holePaths forKey:@"holePaths"];
+//
+//
+//      // Apply to the polygon on UI thread.
+//      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+//          polygon.holes = holePaths;
+//
+//          CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+//          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+//      }];
 
   }];
 }
@@ -400,17 +400,7 @@
       NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:
                                          [self.mapCtrl.objects objectForKey:propertyId]];
 
-      GMSMutablePath *mutablePath = (GMSMutablePath *)[properties objectForKey:@"mutablePath"];
-
-      [mutablePath removeCoordinateAtIndex:index];
-
-      // update the property
-      [properties setObject:mutablePath forKey:@"mutablePath"];
-      if ([mutablePath count] == 0) {
-          [properties removeObjectForKey:@"bounds"];
-      } else {
-          [properties setObject:[[GMSCoordinateBounds alloc] initWithPath:mutablePath] forKey:@"bounds"];
-      }
+//      m
       [self.mapCtrl.objects setObject:properties forKey:propertyId];
 
       CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -428,31 +418,31 @@
       NSString *polygonKey = [command.arguments objectAtIndex:0];
       NSArray *positionList = [command.arguments objectAtIndex:1];
       NSDictionary *latLng;
-      GMSPolygon *polygon = (GMSPolygon *)[self.mapCtrl.objects objectForKey:polygonKey];
+      MAPolygon *polygon = (MAPolygon *)[self.mapCtrl.objects objectForKey:polygonKey];
 
       // Get properties
       NSString *propertyId = [polygonKey stringByReplacingOccurrencesOfString:@"polygon_" withString:@"polygon_property_"];
       NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:
                                          [self.mapCtrl.objects objectForKey:propertyId]];
 
-      GMSMutablePath *mutablePath = (GMSMutablePath *)[properties objectForKey:@"mutablePath"];
-      [mutablePath removeAllCoordinates];
-      for (int i = 0; i < positionList.count; i++) {
-        latLng = [positionList objectAtIndex:i];
-        [mutablePath addCoordinate:CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] doubleValue], [[latLng objectForKey:@"lng"] doubleValue])];
-      }
-
-      // update the property
-      [properties setObject:mutablePath forKey:@"mutablePath"];
-      [properties setObject:[[GMSCoordinateBounds alloc] initWithPath:mutablePath] forKey:@"bounds"];
-      [self.mapCtrl.objects setObject:properties forKey:propertyId];
-
-      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-          [polygon setPath:mutablePath];
-
-          CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-      }];
+//      GMSMutablePath *mutablePath = (GMSMutablePath *)[properties objectForKey:@"mutablePath"];
+//      [mutablePath removeAllCoordinates];
+//      for (int i = 0; i < positionList.count; i++) {
+//        latLng = [positionList objectAtIndex:i];
+//        [mutablePath addCoordinate:CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] doubleValue], [[latLng objectForKey:@"lng"] doubleValue])];
+//      }
+//
+//      // update the property
+//      [properties setObject:mutablePath forKey:@"mutablePath"];
+//      [properties setObject:[[GMSCoordinateBounds alloc] initWithPath:mutablePath] forKey:@"bounds"];
+//      [self.mapCtrl.objects setObject:properties forKey:propertyId];
+//
+//      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+//          [polygon setPath:mutablePath];
+//
+//          CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+//          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+//      }];
   }];
 
 }
@@ -466,29 +456,29 @@
       NSString *polygonKey = [command.arguments objectAtIndex:0];
       NSInteger index = [[command.arguments objectAtIndex:1] integerValue];
       NSDictionary *latLng = [command.arguments objectAtIndex:2];
-      GMSPolygon *polygon = (GMSPolygon *)[self.mapCtrl.objects objectForKey:polygonKey];
+      MAPolygon *polygon = (MAPolygon *)[self.mapCtrl.objects objectForKey:polygonKey];
 
       // Get properties
       NSString *propertyId = [polygonKey stringByReplacingOccurrencesOfString:@"polygon_" withString:@"polygon_property_"];
       NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:
                                          [self.mapCtrl.objects objectForKey:propertyId]];
 
-      GMSMutablePath *mutablePath = (GMSMutablePath *)[properties objectForKey:@"mutablePath"];
-
-      CLLocationCoordinate2D position = CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] doubleValue], [[latLng objectForKey:@"lng"] doubleValue]);
-      [mutablePath insertCoordinate:position atIndex:index];
-
-      // update the property
-      [properties setObject:mutablePath forKey:@"mutablePath"];
-      [properties setObject:[[GMSCoordinateBounds alloc] initWithPath:mutablePath] forKey:@"bounds"];
-      [self.mapCtrl.objects setObject:properties forKey:propertyId];
-
-      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-          [polygon setPath:mutablePath];
-
-          CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-      }];
+//      GMSMutablePath *mutablePath = (GMSMutablePath *)[properties objectForKey:@"mutablePath"];
+//
+//      CLLocationCoordinate2D position = CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] doubleValue], [[latLng objectForKey:@"lng"] doubleValue]);
+//      [mutablePath insertCoordinate:position atIndex:index];
+//
+//      // update the property
+//      [properties setObject:mutablePath forKey:@"mutablePath"];
+//      [properties setObject:[[GMSCoordinateBounds alloc] initWithPath:mutablePath] forKey:@"bounds"];
+//      [self.mapCtrl.objects setObject:properties forKey:propertyId];
+//
+//      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+//          [polygon setPath:mutablePath];
+//
+//          CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+//          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+//      }];
   }];
 
 }
@@ -501,29 +491,29 @@
       NSString *polygonKey = [command.arguments objectAtIndex:0];
       NSInteger index = [[command.arguments objectAtIndex:1] integerValue];
       NSDictionary *latLng = [command.arguments objectAtIndex:2];
-      GMSPolygon *polygon = (GMSPolygon *)[self.mapCtrl.objects objectForKey:polygonKey];
+      MAPolygon *polygon = (MAPolygon *)[self.mapCtrl.objects objectForKey:polygonKey];
 
       // Get properties
       NSString *propertyId = [polygonKey stringByReplacingOccurrencesOfString:@"polygon_" withString:@"polygon_property_"];
       NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:
                                          [self.mapCtrl.objects objectForKey:propertyId]];
 
-      GMSMutablePath *mutablePath = (GMSMutablePath *)[properties objectForKey:@"mutablePath"];
-
-      CLLocationCoordinate2D position = CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] doubleValue], [[latLng objectForKey:@"lng"] doubleValue]);
-      [mutablePath replaceCoordinateAtIndex:index withCoordinate:position];
-
-      // update the property
-      [properties setObject:mutablePath forKey:@"mutablePath"];
-      [properties setObject:[[GMSCoordinateBounds alloc] initWithPath:mutablePath] forKey:@"bounds"];
-      [self.mapCtrl.objects setObject:properties forKey:propertyId];
-
-      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-          [polygon setPath:mutablePath];
-
-          CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-      }];
+//      GMSMutablePath *mutablePath = (GMSMutablePath *)[properties objectForKey:@"mutablePath"];
+//
+//      CLLocationCoordinate2D position = CLLocationCoordinate2DMake([[latLng objectForKey:@"lat"] doubleValue], [[latLng objectForKey:@"lng"] doubleValue]);
+//      [mutablePath replaceCoordinateAtIndex:index withCoordinate:position];
+//
+//      // update the property
+//      [properties setObject:mutablePath forKey:@"mutablePath"];
+//      [properties setObject:[[GMSCoordinateBounds alloc] initWithPath:mutablePath] forKey:@"bounds"];
+//      [self.mapCtrl.objects setObject:properties forKey:propertyId];
+//
+//      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+//          [polygon setPath:mutablePath];
+//
+//          CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+//          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+//      }];
   }];
 
 }
@@ -537,13 +527,13 @@
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
 
     NSString *polygonKey = [command.arguments objectAtIndex:0];
-    GMSPolygon *polygon = [self.mapCtrl.objects objectForKey:polygonKey];
+    MAPolygon *polygon = [self.mapCtrl.objects objectForKey:polygonKey];
 
     NSArray *rgbColor = [command.arguments objectAtIndex:1];
 
     // Apply to the polygon on UI thread.
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [polygon setFillColor:[rgbColor parsePluginColor]];
+//        [polygon setFillColor:[rgbColor parsePluginColor]];
 
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -562,13 +552,13 @@
 
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
     NSString *polygonKey = [command.arguments objectAtIndex:0];
-    GMSPolygon *polygon = [self.mapCtrl.objects objectForKey:polygonKey];
+    MAPolygon *polygon = [self.mapCtrl.objects objectForKey:polygonKey];
 
     NSArray *rgbColor = [command.arguments objectAtIndex:1];
 
     // Apply to the polygon on UI thread.
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [polygon setStrokeColor:[rgbColor parsePluginColor]];
+//        [polygon setStrokeColor:[rgbColor parsePluginColor]];
 
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -586,13 +576,13 @@
 
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
       NSString *polygonKey = [command.arguments objectAtIndex:0];
-      GMSPolygon *polygon = [self.mapCtrl.objects objectForKey:polygonKey];
+      MAPolygon *polygon = [self.mapCtrl.objects objectForKey:polygonKey];
       float width = [[command.arguments objectAtIndex:1] floatValue];
 
 
       // Apply to the polygon on UI thread.
       [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-          [polygon setStrokeWidth:width];
+//          [polygon setStrokeWidth:width];
           CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
           [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
       }];
@@ -610,7 +600,7 @@
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
 
       NSString *polygonKey = [command.arguments objectAtIndex:0];
-      GMSPolygon *polygon = [self.mapCtrl.objects objectForKey:polygonKey];
+      MAPolygon *polygon = [self.mapCtrl.objects objectForKey:polygonKey];
       int zIndex = [[command.arguments objectAtIndex:1] intValue];
 
       // Get properties
@@ -624,7 +614,7 @@
 
       // Apply to the polygon on UI thread.
       [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-          [polygon setZIndex:(int)zIndex];
+//          [polygon setZIndex:(int)zIndex];
 
           CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
           [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -671,7 +661,7 @@
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
 
       NSString *polygonKey = [command.arguments objectAtIndex:0];
-      GMSPolygon *polygon = [self.mapCtrl.objects objectForKey:polygonKey];
+      MAPolygon *polygon = [self.mapCtrl.objects objectForKey:polygonKey];
       Boolean isVisible = [[command.arguments objectAtIndex:1] boolValue];
 
       // Get properties
@@ -707,12 +697,12 @@
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
 
       NSString *polygonKey = [command.arguments objectAtIndex:0];
-      GMSPolygon *polygon = [self.mapCtrl.objects objectForKey:polygonKey];
+      MAPolygon *polygon = [self.mapCtrl.objects objectForKey:polygonKey];
       Boolean isGeodisic = [[command.arguments objectAtIndex:1] boolValue];
 
       // Apply to the polygon on UI thread.
       [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-          [polygon setGeodesic:isGeodisic];
+//          [polygon setGeodesic:isGeodisic];
 
           CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
           [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -731,7 +721,7 @@
     // Apply to the polygon on UI thread.
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         NSString *polygonKey = [command.arguments objectAtIndex:0];
-        GMSPolygon *polygon = [self.mapCtrl.objects objectForKey:polygonKey];
+        MAPolygon *polygon = [self.mapCtrl.objects objectForKey:polygonKey];
         [self.mapCtrl.objects removeObjectForKey:[polygonKey stringByReplacingOccurrencesOfString:@"polygon_" withString:@"polygon_property_"]];
         [self.mapCtrl.objects removeObjectForKey:polygonKey];
         polygon.map = nil;

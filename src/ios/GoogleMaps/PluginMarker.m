@@ -34,11 +34,11 @@
     if ([key hasPrefix:@"marker_"] &&
         ![key hasPrefix:@"marker_icon_"] &&
         ![key hasPrefix:@"marker_property"]) {
-      GMSMarker *marker = (GMSMarker *)[self.mapCtrl.objects objectForKey:key];
+      MAPointAnnotation *marker = (MAPointAnnotation *)[self.mapCtrl.objects objectForKey:key];
       if (marker) {
         marker.userData = nil;
         marker.map = nil;
-        [marker.layer removeAllAnimations];
+//        [marker.layer removeAllAnimations];
       }
       marker = nil;
     }
@@ -80,7 +80,7 @@
         if (successed == NO) {
           pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:result];
         } else {
-          GMSMarker *marker = result;
+          MAPointAnnotation *marker = result;
           NSString *iconCacheKey = [NSString stringWithFormat:@"marker_icon_%@", marker.userData];
           UIImage *image = [[UIImageCache sharedInstance] getCachedImageForKey:iconCacheKey];
           if (image != nil) {
@@ -116,31 +116,32 @@
   CLLocationCoordinate2D position = CLLocationCoordinate2DMake(latitude, longitude);
 
   // Create a marker
-  GMSMarker *marker = [GMSMarker markerWithPosition:position];
-  marker.tracksViewChanges = NO;
-  marker.tracksInfoWindowChanges = NO;
+  MAPointAnnotation *marker = [[MAPointAnnotation alloc] init];
+  marker.coordinate = position;
+//  marker.tracksViewChanges = NO;
+//  marker.tracksInfoWindowChanges = NO;
 
   if ([json valueForKey:@"title"] && [json valueForKey:@"title"] != [NSNull null]) {
     [marker setTitle: [json valueForKey:@"title"]];
   }
   if ([json valueForKey:@"snippet"] && [json valueForKey:@"snippet"] != [NSNull null]) {
-    [marker setSnippet: [json valueForKey:@"snippet"]];
+//    [marker setSnippet: [json valueForKey:@"snippet"]];
   }
   if ([json valueForKey:@"draggable"] && [json valueForKey:@"draggable"] != [NSNull null]) {
-    [marker setDraggable:[[json valueForKey:@"draggable"] boolValue]];
+//    [marker setDraggable:[[json valueForKey:@"draggable"] boolValue]];
   }
   if ([json valueForKey:@"flat"] && [json valueForKey:@"flat"] != [NSNull null]) {
-    [marker setFlat:[[json valueForKey:@"flat"] boolValue]];
+//    [marker setFlat:[[json valueForKey:@"flat"] boolValue]];
   }
   if ([json valueForKey:@"rotation"] && [json valueForKey:@"rotation"] != [NSNull null]) {
     CLLocationDegrees degrees = [[json valueForKey:@"rotation"] doubleValue];
-    [marker setRotation:degrees];
+//    [marker setRotation:degrees];
   }
   if ([json valueForKey:@"opacity"] && [json valueForKey:@"opacity"] != [NSNull null]) {
-    [marker setOpacity:[[json valueForKey:@"opacity"] floatValue]];
+//    [marker setOpacity:[[json valueForKey:@"opacity"] floatValue]];
   }
   if ([json valueForKey:@"zIndex"] && [json valueForKey:@"zIndex"] != [NSNull null]) {
-    [marker setZIndex:[[json valueForKey:@"zIndex"] intValue]];
+//    [marker setZIndex:[[json valueForKey:@"zIndex"] intValue]];
   }
 
   [self.mapCtrl.objects setObject:marker forKey: markerId];
@@ -248,9 +249,9 @@
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
       NSString *hashCode = [command.arguments objectAtIndex:0];
 
-      GMSMarker *marker = [self.mapCtrl.objects objectForKey:hashCode];
+      MAPointAnnotation *marker = [self.mapCtrl.objects objectForKey:hashCode];
       if (marker) {
-        self.mapCtrl.map.selectedMarker = marker;
+        self.mapCtrl.map.selectedAnnotations = marker;
         self.mapCtrl.activeMarker = marker;
       }
 
@@ -267,7 +268,7 @@
 {
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-      self.mapCtrl.map.selectedMarker = nil;
+      self.mapCtrl.map.selectedAnnotations = nil;
       self.mapCtrl.activeMarker = nil;
       CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
       [(CDVCommandDelegateImpl *)self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -283,12 +284,12 @@
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
     NSString *markerId = [command.arguments objectAtIndex:0];
 
-    GMSMarker *marker = [self.mapCtrl.objects objectForKey:markerId];
+    MAPointAnnotation *marker = [self.mapCtrl.objects objectForKey:markerId];
     NSNumber *latitude = @0.0;
     NSNumber *longitude = @0.0;
     if (marker) {
-      latitude = [NSNumber numberWithFloat: marker.position.latitude];
-      longitude = [NSNumber numberWithFloat: marker.position.longitude];
+      latitude = [NSNumber numberWithFloat: marker.coordinate.latitude];
+      longitude = [NSNumber numberWithFloat: marker.coordinate.longitude];
     }
     NSMutableDictionary *json = [NSMutableDictionary dictionary];
     [json setObject:latitude forKey:@"lat"];
@@ -308,7 +309,7 @@
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
       NSString *markerId = [command.arguments objectAtIndex:0];
-      GMSMarker *marker = [self.mapCtrl.objects objectForKey:markerId];
+      MAPointAnnotation *marker = [self.mapCtrl.objects objectForKey:markerId];
       marker.title = [command.arguments objectAtIndex:1];
 
       NSString *propertyId = [NSString stringWithFormat:@"marker_property_%@", markerId];
@@ -334,8 +335,8 @@
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
       NSString *markerId = [command.arguments objectAtIndex:0];
-      GMSMarker *marker = [self.mapCtrl.objects objectForKey:markerId];
-      marker.snippet = [command.arguments objectAtIndex:1];
+      MAPointAnnotation *marker = [self.mapCtrl.objects objectForKey:markerId];
+//      marker.snippet = [command.arguments objectAtIndex:1];
 
       CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
       [(CDVCommandDelegateImpl *)self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -352,7 +353,7 @@
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
       NSString *markerId = [command.arguments objectAtIndex:0];
-      GMSMarker *marker = [self.mapCtrl.objects objectForKey:markerId];
+      MAPointAnnotation *marker = [self.mapCtrl.objects objectForKey:markerId];
       [self.mapCtrl.objects removeObjectForKey:markerId];
       [self _removeMarker:marker];
       marker = nil;
@@ -363,7 +364,7 @@
   }];
 }
 
--(void)_removeMarker:(GMSMarker *)marker {
+-(void)_removeMarker:(MAPointAnnotation *)marker {
   if (marker == nil || marker.userData == nil) {
     return;
   }
@@ -411,17 +412,17 @@
 {
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
     NSString *markerId = [command.arguments objectAtIndex:0];
-    GMSMarker *marker = [self.mapCtrl.objects objectForKey:markerId];
+    MAPointAnnotation *marker = [self.mapCtrl.objects objectForKey:markerId];
     CGFloat anchorX = [[command.arguments objectAtIndex:1] floatValue];
     CGFloat anchorY = [[command.arguments objectAtIndex:2] floatValue];
 
-    if (marker.icon) {
-      anchorX = anchorX / marker.icon.size.width;
-      anchorY = anchorY / marker.icon.size.height;
-      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [marker setGroundAnchor:CGPointMake(anchorX, anchorY)];
-      }];
-    }
+//    if (marker.icon) {
+//      anchorX = anchorX / marker.icon.size.width;
+//      anchorY = anchorY / marker.icon.size.height;
+//      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+//        [marker setGroundAnchor:CGPointMake(anchorX, anchorY)];
+//      }];
+//    }
 
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [(CDVCommandDelegateImpl *)self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -436,20 +437,20 @@
 {
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
     NSString *markerId = [command.arguments objectAtIndex:0];
-    GMSMarker *marker = [self.mapCtrl.objects objectForKey:markerId];
+    MAPointAnnotation *marker = [self.mapCtrl.objects objectForKey:markerId];
 
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
       float anchorX = [[command.arguments objectAtIndex:1] floatValue];
       float anchorY = [[command.arguments objectAtIndex:2] floatValue];
       CDVPluginResult* pluginResult;
-      if (marker.icon) {
-        anchorX = anchorX / marker.icon.size.width;
-        anchorY = anchorY / marker.icon.size.height;
-        [marker setInfoWindowAnchor:CGPointMake(anchorX, anchorY)];
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-      } else {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
-      }
+//      if (marker.icon) {
+//        anchorX = anchorX / marker.icon.size.width;
+//        anchorY = anchorY / marker.icon.size.height;
+//        [marker setInfoWindowAnchor:CGPointMake(anchorX, anchorY)];
+//        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+//      } else {
+//        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+//      }
       [(CDVCommandDelegateImpl *)self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 
@@ -466,8 +467,8 @@
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
       NSString *markerId = [command.arguments objectAtIndex:0];
-      GMSMarker *marker = [self.mapCtrl.objects objectForKey:markerId];
-      marker.opacity = [[command.arguments objectAtIndex:1] floatValue];
+      MAPointAnnotation *marker = [self.mapCtrl.objects objectForKey:markerId];
+//      marker.opacity = [[command.arguments objectAtIndex:1] floatValue];
 
       CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
       [(CDVCommandDelegateImpl *)self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -484,8 +485,8 @@
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
       NSString *markerId = [command.arguments objectAtIndex:0];
-      GMSMarker *marker = [self.mapCtrl.objects objectForKey:markerId];
-      marker.zIndex = [[command.arguments objectAtIndex:1] intValue];
+      MAPointAnnotation *marker = [self.mapCtrl.objects objectForKey:markerId];
+//      marker.zIndex = [[command.arguments objectAtIndex:1] intValue];
 
       CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
       [(CDVCommandDelegateImpl *)self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -502,9 +503,9 @@
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
       NSString *markerId = [command.arguments objectAtIndex:0];
-      GMSMarker *marker = [self.mapCtrl.objects objectForKey:markerId];
+      MAPointAnnotation *marker = [self.mapCtrl.objects objectForKey:markerId];
       Boolean isEnabled = [[command.arguments objectAtIndex:1] boolValue];
-      [marker setDraggable:isEnabled];
+//      [marker setDraggable:isEnabled];
 
       CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
       [(CDVCommandDelegateImpl *)self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -544,7 +545,7 @@
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
 
       NSString *markerId = [command.arguments objectAtIndex:0];
-      GMSMarker *marker = [self.mapCtrl.objects objectForKey:markerId];
+      MAPointAnnotation *marker = [self.mapCtrl.objects objectForKey:markerId];
       Boolean isVisible = [[command.arguments objectAtIndex:1] boolValue];
 
       if (isVisible) {
@@ -573,13 +574,13 @@
 {
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
     NSString *markerId = [command.arguments objectAtIndex:0];
-    GMSMarker *marker = [self.mapCtrl.objects objectForKey:markerId];
+    MAPointAnnotation *marker = [self.mapCtrl.objects objectForKey:markerId];
 
     double latitude = [[command.arguments objectAtIndex:1] doubleValue];
     double longitude = [[command.arguments objectAtIndex:2] doubleValue];
     CLLocationCoordinate2D position = CLLocationCoordinate2DMake(latitude, longitude);
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-      [marker setPosition:position];
+      marker.coordinate = position;
 
       CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
       [(CDVCommandDelegateImpl *)self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -596,9 +597,9 @@
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
       NSString *markerId = [command.arguments objectAtIndex:0];
-      GMSMarker *marker = [self.mapCtrl.objects objectForKey:markerId];
+      MAPointAnnotation *marker = [self.mapCtrl.objects objectForKey:markerId];
       Boolean isFlat = [[command.arguments objectAtIndex:1] boolValue];
-      [marker setFlat: isFlat];
+//      [marker setFlat: isFlat];
 
       CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
       [(CDVCommandDelegateImpl *)self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -615,7 +616,7 @@
 
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
     NSString *markerId = [command.arguments objectAtIndex:0];
-    GMSMarker *marker = [self.mapCtrl.objects objectForKey:markerId];
+    MAPointAnnotation *marker = [self.mapCtrl.objects objectForKey:markerId];
     if (marker == nil) {
       NSLog(@"--> can not find the maker : %@", markerId);
       CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
@@ -665,10 +666,10 @@
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
       NSString *markerId = [command.arguments objectAtIndex:0];
-      GMSMarker *marker = [self.mapCtrl.objects objectForKey:markerId];
+      MAPointAnnotation *marker = [self.mapCtrl.objects objectForKey:markerId];
 
       CLLocationDegrees degrees = [[command.arguments objectAtIndex:1] doubleValue];
-      [marker setRotation:degrees];
+//      [marker setRotation:degrees];
 
       CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
       [(CDVCommandDelegateImpl *)self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -683,7 +684,7 @@
   [self.mapCtrl.executeQueue addOperationWithBlock:^{
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
       NSString *markerId = [command.arguments objectAtIndex:0];
-      GMSMarker *marker = [self.mapCtrl.objects objectForKey:markerId];
+      MAPointAnnotation *marker = [self.mapCtrl.objects objectForKey:markerId];
 
       NSString *animation = [command.arguments objectAtIndex:1];
       CDVCommandDelegateImpl *cmdDelegate = (CDVCommandDelegateImpl *)self.commandDelegate;
@@ -696,7 +697,7 @@
   }];
 }
 
--(void)setMarkerAnimation_:(NSString *)animation marker:(GMSMarker *)marker callbackBlock:(void (^)()) callbackBlock {
+-(void)setMarkerAnimation_:(NSString *)animation marker:(MAPointAnnotation *)marker callbackBlock:(void (^)()) callbackBlock {
 
   animation = [animation uppercaseString];
   SWITCH(animation) {
@@ -721,7 +722,7 @@
  * (memo) http://qiita.com/edo_m18/items/4309d01b67ee42c35b3c
  * (memo) http://stackoverflow.com/questions/12164049/animationdidstop-for-group-animation
  */
--(void)setDropAnimation_:(GMSMarker *)marker callbackBlock:(void (^)()) callbackBlock {
+-(void)setDropAnimation_:(MAPointAnnotation *)marker callbackBlock:(void (^)()) callbackBlock {
   /**
    * Marker drop animation
    */
@@ -730,36 +731,36 @@
   CAKeyframeAnimation *longitudeAnim = [CAKeyframeAnimation animationWithKeyPath:@"longitude"];
   CAKeyframeAnimation *latitudeAnim = [CAKeyframeAnimation animationWithKeyPath:@"latitude"];
 
-  GMSProjection *projection = self.mapCtrl.map.projection;
-  CGPoint point = [projection pointForCoordinate:marker.position];
-  double distance = point.y ;
-
-  NSMutableArray *latitudePath = [NSMutableArray array];
-  NSMutableArray *longitudeath = [NSMutableArray array];
-  CLLocationCoordinate2D startLatLng;
-
-  point.y = 0;
-  startLatLng = [projection coordinateForPoint:point];
-  [latitudePath addObject:[NSNumber numberWithDouble:startLatLng.latitude]];
-  [longitudeath addObject:[NSNumber numberWithDouble:startLatLng.longitude]];
-
-  point.y = distance;
-  startLatLng = [projection coordinateForPoint:point];
-  [latitudePath addObject:[NSNumber numberWithDouble:startLatLng.latitude]];
-  [longitudeath addObject:[NSNumber numberWithDouble:startLatLng.longitude]];
-
-  longitudeAnim.values = longitudeath;
-  latitudeAnim.values = latitudePath;
+//  GMSProjection *projection = self.mapCtrl.map.projection;
+//  CGPoint point = [projection pointForCoordinate:marker.position];
+//  double distance = point.y ;
+//
+//  NSMutableArray *latitudePath = [NSMutableArray array];
+//  NSMutableArray *longitudeath = [NSMutableArray array];
+//  CLLocationCoordinate2D startLatLng;
+//
+//  point.y = 0;
+//  startLatLng = [projection coordinateForPoint:point];
+//  [latitudePath addObject:[NSNumber numberWithDouble:startLatLng.latitude]];
+//  [longitudeath addObject:[NSNumber numberWithDouble:startLatLng.longitude]];
+//
+//  point.y = distance;
+//  startLatLng = [projection coordinateForPoint:point];
+//  [latitudePath addObject:[NSNumber numberWithDouble:startLatLng.latitude]];
+//  [longitudeath addObject:[NSNumber numberWithDouble:startLatLng.longitude]];
+//
+//  longitudeAnim.values = longitudeath;
+//  latitudeAnim.values = latitudePath;
 
   CAAnimationGroup *group = [[CAAnimationGroup alloc] init];
   group.animations = @[longitudeAnim, latitudeAnim];
   group.duration = duration;
   [group setCompletionBlock: callbackBlock];
 
-  [marker.layer addAnimation:group forKey:@"dropMarkerAnim"];
+//  [marker.layer addAnimation:group forKey:@"dropMarkerAnim"];
 
 }
--(void)setBounceAnimation_:(GMSMarker *)marker callbackBlock:(void (^)()) callbackBlock {
+-(void)setBounceAnimation_:(MAPointAnnotation *)marker callbackBlock:(void (^)()) callbackBlock {
   /**
    * Marker bounce animation
    */
@@ -768,37 +769,37 @@
   CAKeyframeAnimation *longitudeAnim = [CAKeyframeAnimation animationWithKeyPath:@"longitude"];
   CAKeyframeAnimation *latitudeAnim = [CAKeyframeAnimation animationWithKeyPath:@"latitude"];
 
-  GMSProjection *projection = self.mapCtrl.map.projection;
-  CGPoint point = [projection pointForCoordinate:marker.position];
-  double distance = point.y;
+//  GMSProjection *projection = self.mapCtrl.map.projection;
+//  CGPoint point = [projection pointForCoordinate:marker.position];
+//  double distance = point.y;
 
-  NSMutableArray *latitudePath = [NSMutableArray array];
-  NSMutableArray *longitudeath = [NSMutableArray array];
-  CLLocationCoordinate2D startLatLng;
-
-  point.y = distance * 0.5f;
-
-  for (double i = 0.5f; i > 0; i-= 0.15f) {
-    startLatLng = [projection coordinateForPoint:point];
-    [latitudePath addObject:[NSNumber numberWithDouble:startLatLng.latitude]];
-    [longitudeath addObject:[NSNumber numberWithDouble:startLatLng.longitude]];
-
-    point.y = distance;
-    startLatLng = [projection coordinateForPoint:point];
-    [latitudePath addObject:[NSNumber numberWithDouble:startLatLng.latitude]];
-    [longitudeath addObject:[NSNumber numberWithDouble:startLatLng.longitude]];
-
-    point.y = distance - distance * (i - 0.15f);
-  }
-  longitudeAnim.values = longitudeath;
-  latitudeAnim.values = latitudePath;
+//  NSMutableArray *latitudePath = [NSMutableArray array];
+//  NSMutableArray *longitudeath = [NSMutableArray array];
+//  CLLocationCoordinate2D startLatLng;
+//
+//  point.y = distance * 0.5f;
+//
+//  for (double i = 0.5f; i > 0; i-= 0.15f) {
+//    startLatLng = [projection coordinateForPoint:point];
+//    [latitudePath addObject:[NSNumber numberWithDouble:startLatLng.latitude]];
+//    [longitudeath addObject:[NSNumber numberWithDouble:startLatLng.longitude]];
+//
+//    point.y = distance;
+//    startLatLng = [projection coordinateForPoint:point];
+//    [latitudePath addObject:[NSNumber numberWithDouble:startLatLng.latitude]];
+//    [longitudeath addObject:[NSNumber numberWithDouble:startLatLng.longitude]];
+//
+//    point.y = distance - distance * (i - 0.15f);
+//  }
+//  longitudeAnim.values = longitudeath;
+//  latitudeAnim.values = latitudePath;
 
   CAAnimationGroup *group = [[CAAnimationGroup alloc] init];
   group.animations = @[longitudeAnim, latitudeAnim];
   group.duration = duration;
   [group setCompletionBlock: callbackBlock];
 
-  [marker.layer addAnimation:group forKey:@"bounceMarkerAnim"];
+//  [marker.layer addAnimation:group forKey:@"bounceMarkerAnim"];
 }
 
 /**
@@ -806,7 +807,7 @@
  * Load the icon; then set to the marker
  */
 
--(void)setIcon_:(GMSMarker *)marker iconProperty:(NSDictionary *)iconProperty callbackBlock:(void (^)(BOOL successed, id resultObj)) callbackBlock {
+-(void)setIcon_:(MAPointAnnotation *)marker iconProperty:(NSDictionary *)iconProperty callbackBlock:(void (^)(BOOL successed, id resultObj)) callbackBlock {
 
   if (marker == nil) {
     callbackBlock(NO, @"marker is null");
@@ -836,7 +837,7 @@
   if ([iconProperty valueForKey:@"iconColor"] && [iconProperty valueForKey:@"iconColor"] != [NSNull null]) {
     dispatch_async(dispatch_get_main_queue(), ^{
       UIColor *iconColor = [iconProperty valueForKey:@"iconColor"];
-      marker.icon = [GMSMarker markerImageWithColor:iconColor];
+//      marker.icon = [GMSMarker markerImageWithColor:iconColor];
 
       // The `visible` property
       if (iconProperty[@"visible"] == [NSNumber numberWithBool:true]) {
@@ -920,7 +921,7 @@
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      marker.icon = image;
+//      marker.icon = image;
 
       CGFloat anchorX = 0;
       CGFloat anchorY = 0;
@@ -929,7 +930,7 @@
         NSArray *points = [iconProperty valueForKey:@"anchor"];
         anchorX = [[points objectAtIndex:0] floatValue] / image.size.width;
         anchorY = [[points objectAtIndex:1] floatValue] / image.size.height;
-        marker.groundAnchor = CGPointMake(anchorX, anchorY);
+//        marker.groundAnchor = CGPointMake(anchorX, anchorY);
       }
 
       // The `infoWindowAnchor` property
@@ -937,7 +938,7 @@
         NSArray *points = [iconProperty valueForKey:@"infoWindowAnchor"];
         anchorX = [[points objectAtIndex:0] floatValue] / image.size.width;
         anchorY = [[points objectAtIndex:1] floatValue] / image.size.height;
-        marker.infoWindowAnchor = CGPointMake(anchorX, anchorY);
+//        marker.infoWindowAnchor = CGPointMake(anchorX, anchorY);
       }
 
 
@@ -1069,14 +1070,14 @@
           }
 
           dispatch_async(dispatch_get_main_queue(), ^{
-            marker.icon = image;
+//            marker.icon = image;
 
             // The `anchor` property for the icon
             if ([iconProperty valueForKey:@"anchor"] && [iconProperty valueForKey:@"anchor"] != [NSNull null]) {
               NSArray *points = [iconProperty valueForKey:@"anchor"];
               CGFloat anchorX = [[points objectAtIndex:0] floatValue] / image.size.width;
               CGFloat anchorY = [[points objectAtIndex:1] floatValue] / image.size.height;
-              marker.groundAnchor = CGPointMake(anchorX, anchorY);
+//              marker.groundAnchor = CGPointMake(anchorX, anchorY);
             }
 
 
@@ -1085,7 +1086,7 @@
               NSArray *points = [iconProperty valueForKey:@"infoWindowAnchor"];
               CGFloat anchorX = [[points objectAtIndex:0] floatValue] / image.size.width;
               CGFloat anchorY = [[points objectAtIndex:1] floatValue] / image.size.height;
-              marker.infoWindowAnchor = CGPointMake(anchorX, anchorY);
+//              marker.infoWindowAnchor = CGPointMake(anchorX, anchorY);
             }
 
             // The `visible` property
@@ -1213,7 +1214,7 @@
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      marker.icon = image;
+//      marker.icon = image;
 
       CGFloat anchorX = 0;
       CGFloat anchorY = 0;
@@ -1222,7 +1223,7 @@
         NSArray *points = [iconProperty valueForKey:@"anchor"];
         anchorX = [[points objectAtIndex:0] floatValue] / image.size.width;
         anchorY = [[points objectAtIndex:1] floatValue] / image.size.height;
-        marker.groundAnchor = CGPointMake(anchorX, anchorY);
+//        marker.groundAnchor = CGPointMake(anchorX, anchorY);
       }
 
       // The `infoWindowAnchor` property
@@ -1230,7 +1231,7 @@
         NSArray *points = [iconProperty valueForKey:@"infoWindowAnchor"];
         anchorX = [[points objectAtIndex:0] floatValue] / image.size.width;
         anchorY = [[points objectAtIndex:1] floatValue] / image.size.height;
-        marker.infoWindowAnchor = CGPointMake(anchorX, anchorY);
+//        marker.infoWindowAnchor = CGPointMake(anchorX, anchorY);
       }
 
 
@@ -1313,14 +1314,14 @@
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      marker.icon = image;
+//      marker.icon = image;
 
       // The `anchor` property for the icon
       if ([iconProperty valueForKey:@"anchor"] && [iconProperty valueForKey:@"anchor"] != [NSNull null]) {
         NSArray *points = [iconProperty valueForKey:@"anchor"];
         CGFloat anchorX = [[points objectAtIndex:0] floatValue] / image.size.width;
         CGFloat anchorY = [[points objectAtIndex:1] floatValue] / image.size.height;
-        marker.groundAnchor = CGPointMake(anchorX, anchorY);
+//        marker.groundAnchor = CGPointMake(anchorX, anchorY);
       }
 
 
@@ -1329,7 +1330,7 @@
         NSArray *points = [iconProperty valueForKey:@"infoWindowAnchor"];
         CGFloat anchorX = [[points objectAtIndex:0] floatValue] / image.size.width;
         CGFloat anchorY = [[points objectAtIndex:1] floatValue] / image.size.height;
-        marker.infoWindowAnchor = CGPointMake(anchorX, anchorY);
+//        marker.infoWindowAnchor = CGPointMake(anchorX, anchorY);
       }
 
       // The `visible` property

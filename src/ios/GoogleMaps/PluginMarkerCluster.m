@@ -48,7 +48,7 @@ const int GEOCELL_GRID_SIZE = 4;
       dispatch_async(dispatch_get_main_queue(), ^(void) {
         @synchronized (self.deleteMarkers) {
           NSString *markerId;
-          GMSMarker *marker = nil;
+          MAPointAnnotation *marker = nil;
           //---------
           // delete
           //---------
@@ -280,7 +280,7 @@ const int GEOCELL_GRID_SIZE = 4;
       //self.mapCtrl.map.selectedMarker = nil;
       NSString *clusterId_markerId;
       NSMutableDictionary *markerProperties;
-      GMSMarker *marker;
+      MAPointAnnotation *marker;
       CLLocationCoordinate2D position;
       double latitude, longitude;
       BOOL isNew;
@@ -316,7 +316,7 @@ const int GEOCELL_GRID_SIZE = 4;
                   NSArray *tmp = [clusterId_markerId componentsSeparatedByString:@"-"];
                   NSString *markerId = [tmp objectAtIndex:1];
                   NSMutableDictionary *createResult = [NSMutableDictionary dictionary];
-                  GMSMarker *marker = resultObj;
+                  MAPointAnnotation *marker = resultObj;
                   UIImage *image;
                   NSString *iconKey = [NSString stringWithFormat:@"marker_icon_%@", marker.userData];
                   // retrieve key mapping set by the PluginMarker.setIcon_
@@ -361,7 +361,7 @@ const int GEOCELL_GRID_SIZE = 4;
               marker.title = [markerProperties objectForKey:@"title"];
             }
             if ([markerProperties objectForKey:@"snippet"]) {
-              marker.snippet = [markerProperties objectForKey:@"snippet"];
+//              marker.snippet = [markerProperties objectForKey:@"snippet"];
             }
             @synchronized (self.pluginMarkers) {
               [self.pluginMarkers setObject:@"CREATED" forKey:clusterId_markerId];
@@ -382,7 +382,8 @@ const int GEOCELL_GRID_SIZE = 4;
           latitude = [[positionJSON objectForKey:@"lat"] doubleValue];
           longitude = [[positionJSON objectForKey:@"lng"] doubleValue];
           position = CLLocationCoordinate2DMake(latitude, longitude);
-          marker = [GMSMarker markerWithPosition:position];
+          marker = [[MAPointAnnotation alloc] init];
+          marker.coordinate = position;
           marker.userData = clusterId_markerId;
 
           // Store the marker instance with markerId
@@ -402,7 +403,7 @@ const int GEOCELL_GRID_SIZE = 4;
           marker.title = [markerProperties objectForKey:@"title"];
         }
         if ([markerProperties objectForKey:@"snippet"]) {
-          marker.snippet = [markerProperties objectForKey:@"snippet"];
+//          marker.snippet = [markerProperties objectForKey:@"snippet"];
         }
 
 
@@ -483,7 +484,7 @@ const int GEOCELL_GRID_SIZE = 4;
 
 }
 
-- (void) setIconToClusterMarker:(NSString *) markerId marker:(GMSMarker *)marker iconProperty:(NSDictionary *)iconProperty callbackBlock:(void (^)(BOOL successed, id resultObj)) callbackBlock {
+- (void) setIconToClusterMarker:(NSString *) markerId marker:(MAPointAnnotation *)marker iconProperty:(NSDictionary *)iconProperty callbackBlock:(void (^)(BOOL successed, id resultObj)) callbackBlock {
   PluginMarkerCluster *self_ = self;
   @synchronized (_pluginMarkers) {
     if ([[_pluginMarkers objectForKey:markerId] isEqualToString:@"DELETED"]) {
@@ -502,7 +503,7 @@ const int GEOCELL_GRID_SIZE = 4;
       //----------------------------------------------------------------------
       // If marker has been already marked as DELETED, remove the marker.
       //----------------------------------------------------------------------
-      GMSMarker *marker = resultObj;
+      MAPointAnnotation *marker = resultObj;
       @synchronized (self_.pluginMarkers) {
         if ([[self_.pluginMarkers objectForKey:markerId] isEqualToString:@"DELETED"]) {
           [self_ _removeMarker:marker];
@@ -577,7 +578,7 @@ const int GEOCELL_GRID_SIZE = 4;
 }
 
 
-- (GMSCoordinateBounds *)computeBox:(NSString *) geocell {
+- (MACoordinateBounds)computeBox:(NSString *) geocell {
   NSString *geoChar;
   double north = 90.0;
   double south = -90.0;
@@ -608,11 +609,8 @@ const int GEOCELL_GRID_SIZE = 4;
     east = west + subcell_lng_span;
   }
 
-  GMSMutablePath *mutablePath = [[GMSMutablePath alloc] init];
-  [mutablePath addCoordinate:CLLocationCoordinate2DMake(south, west)];
-  [mutablePath addCoordinate:CLLocationCoordinate2DMake(north, east)];
 
-  return [[GMSCoordinateBounds alloc] initWithPath:mutablePath];
+  return MACoordinateBoundsMake(CLLocationCoordinate2DMake(north, east), CLLocationCoordinate2DMake(south, west));
 }
 
 @end

@@ -13,14 +13,15 @@
 #import "IPluginProtocol.h"
 #import "PluginObjects.h"
 #import "PluginViewController.h"
-#import <GoogleMaps/GoogleMaps.h>
+// #import <GoogleMaps/GoogleMaps.h>
+#import <AMapNaviKit/MAMapKit.h>
+#import "GMSCoordinateBounds+Geometry.h"
+@interface PluginMapViewController : PluginViewController<MAMapViewDelegate>
 
-@interface PluginMapViewController : PluginViewController<GMSMapViewDelegate, GMSIndoorDisplayDelegate>
+@property (nonatomic) MAPointAnnotation* activeMarker;
+@property (nonatomic) MAMapView* map;
 
-@property (nonatomic) GMSMarker* activeMarker;
-@property (nonatomic) GMSMapView* map;
-
-- (BOOL)didTapMyLocationButtonForMapView:(GMSMapView *)mapView;
-- (void)didChangeActiveBuilding: (GMSIndoorBuilding *)building;
-- (void)didChangeActiveLevel: (GMSIndoorLevel *)level;
+- (BOOL)didTapMyLocationButtonForMapView:(MAMapView *)mapView;
+//- (void)didChangeActiveBuilding: (GMSIndoorBuilding *)building;
+//- (void)didChangeActiveLevel: (GMSIndoorLevel *)level;
 @end

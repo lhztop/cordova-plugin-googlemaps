@@ -25,31 +25,31 @@
     //-------------------------------
     // Check the Google Maps API key
     //-------------------------------
-    NSString *APIKey = [((CDVViewController *)self.viewController).settings objectForKey:@"google_maps_ios_api_key"];
-
-    if (APIKey == nil) {
-      NSString *errorTitle = [PluginUtil PGM_LOCALIZATION:@"APIKEY_IS_UNDEFINED_TITLE"];
-      NSString *errorMsg = [PluginUtil PGM_LOCALIZATION:@"APIKEY_IS_UNDEFINED_MESSAGE"];
-
-      UIAlertController* alert = [UIAlertController alertControllerWithTitle:errorTitle
-                                                                     message:errorMsg
-                                                              preferredStyle:UIAlertControllerStyleAlert];
-
-      NSString *closeBtnLabel = [PluginUtil PGM_LOCALIZATION:@"CLOSE_BUTTON"];
-      UIAlertAction* ok = [UIAlertAction actionWithTitle:closeBtnLabel
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction* action)
-                           {
-                             [alert dismissViewControllerAnimated:YES completion:nil];
-                           }];
-
-      [alert addAction:ok];
-
-      [self.viewController presentViewController:alert
-                                        animated:YES
-                                      completion:nil];
-      return;
-    }
+//    NSString *APIKey = [((CDVViewController *)self.viewController).settings objectForKey:@"google_maps_ios_api_key"];
+//
+//    if (APIKey == nil) {
+//      NSString *errorTitle = [PluginUtil PGM_LOCALIZATION:@"APIKEY_IS_UNDEFINED_TITLE"];
+//      NSString *errorMsg = [PluginUtil PGM_LOCALIZATION:@"APIKEY_IS_UNDEFINED_MESSAGE"];
+//
+//      UIAlertController* alert = [UIAlertController alertControllerWithTitle:errorTitle
+//                                                                     message:errorMsg
+//                                                              preferredStyle:UIAlertControllerStyleAlert];
+//
+//      NSString *closeBtnLabel = [PluginUtil PGM_LOCALIZATION:@"CLOSE_BUTTON"];
+//      UIAlertAction* ok = [UIAlertAction actionWithTitle:closeBtnLabel
+//                                                   style:UIAlertActionStyleDefault
+//                                                 handler:^(UIAlertAction* action)
+//                           {
+//                             [alert dismissViewControllerAnimated:YES completion:nil];
+//                           }];
+//
+//      [alert addAction:ok];
+//
+//      [self.viewController presentViewController:alert
+//                                        animated:YES
+//                                      completion:nil];
+//      return;
+//    }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didRotate:)
@@ -57,7 +57,7 @@
 
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 
-    [GMSServices provideAPIKey:APIKey];
+//    [GMSServices provideAPIKey:APIKey];
   }];
 
   //-------------------------------
@@ -95,7 +95,7 @@
       if ([viewPlugin isKindOfClass:[PluginMap class]]) {
         pluginMap = (PluginMap *)viewPlugin;
         // Trigger the CAMERA_MOVE_END mandatory
-        [pluginMap.mapCtrl mapView:pluginMap.mapCtrl.map idleAtCameraPosition:pluginMap.mapCtrl.map.camera];
+//        [pluginMap.mapCtrl mapView:pluginMap.mapCtrl.map idleAtCameraPosition:pluginMap.mapCtrl.map.camera];
       }
     }
   }
@@ -152,16 +152,16 @@
 
   CDVPlugin<IPluginView> *pluginView = [self.viewPlugins objectForKey:mapId];
   if ([mapId hasPrefix:@"streetview_"]) {
-    PluginStreetViewPanorama *pluginSV = (PluginStreetViewPanorama *)pluginView;
-    pluginSV.isRemoved = YES;
-    //[pluginSV clear:nil];
-    [pluginSV pluginUnload];
-    [cdvViewController.pluginObjects setObject:pluginView forKey:mapId];
-    [cdvViewController.pluginsMap setValue:mapId forKey:mapId];
-
-    [self.pluginLayer removePluginOverlay:pluginSV.panoramaCtrl];
-    pluginSV.panoramaCtrl.view = nil;
-    pluginSV = nil;
+//    PluginStreetViewPanorama *pluginSV = (PluginStreetViewPanorama *)pluginView;
+//    pluginSV.isRemoved = YES;
+//    //[pluginSV clear:nil];
+//    [pluginSV pluginUnload];
+//    [cdvViewController.pluginObjects setObject:pluginView forKey:mapId];
+//    [cdvViewController.pluginsMap setValue:mapId forKey:mapId];
+//
+//    [self.pluginLayer removePluginOverlay:pluginSV.panoramaCtrl];
+//    pluginSV.panoramaCtrl.view = nil;
+//    pluginSV = nil;
   } else {
     PluginMap *pluginMap = (PluginMap *)pluginView;
     pluginMap.isRemoved = YES;
@@ -207,7 +207,9 @@
   if (self.pluginLayer != nil) {
     self.pluginLayer.isSuspended = false;
   }
-
+  NSDictionary* infoDict = [[NSBundle mainBundle] infoDictionary];
+  [AMapServices sharedServices].apiKey = [infoDict objectForKey:@"AMapAppKey"];
+    [AMapServices sharedServices].apiKey = @"f7b85295f279400a24103ab11849bdf3";
 
   dispatch_async(dispatch_get_main_queue(), ^{
 
@@ -259,13 +261,12 @@
 
 
     // Generate an instance of GMSMapView;
-    GMSCameraPosition *camera = nil;
+//    GMSCameraPosition *camera = nil;
     int bearing = 0;
     double angle = 0, zoom = 0;
-    NSDictionary *latLng = nil;
-    double latitude = 0;
-    double longitude = 0;
-    GMSCoordinateBounds *cameraBounds = nil;
+    double latitude = 0, longitude = 0;
+    NSDictionary *latLng;
+    MACoordinateBounds cameraBounds;
     NSDictionary *cameraOptions = [initOptions valueForKey:@"camera"];
     if (cameraOptions) {
 
@@ -296,21 +297,14 @@
           //    new plugin.google.maps.LatLng()
           //  ]
           //---------------------------------------------
-          int i = 0;
           NSArray *latLngList = [cameraOptions objectForKey:@"target"];
-          GMSMutablePath *path = [GMSMutablePath path];
-          for (i = 0; i < [latLngList count]; i++) {
-            latLng = [latLngList objectAtIndex:i];
-            latitude = [[latLng valueForKey:@"lat"] doubleValue];
-            longitude = [[latLng valueForKey:@"lng"] doubleValue];
-            [path addLatitude:latitude longitude:longitude];
-          }
+          
 
-          cameraBounds = [[GMSCoordinateBounds alloc] initWithPath:path];
-          //CLLocationCoordinate2D center = cameraBounds.center;
-
-          latitude = cameraBounds.center.latitude;
-          longitude = cameraBounds.center.longitude;
+          cameraBounds = [PluginUtil getBoundsFromPoints:latLngList];
+          CLLocationCoordinate2D center = [PluginUtil centerOfBounds:cameraBounds];
+          
+          latitude = center.latitude;
+          longitude = center.longitude;
         } else {
           //------------------------------------------------------------------
           //  cameraPosition.target = new plugin.google.maps.LatLng();
@@ -324,45 +318,42 @@
       }
       //[pluginMap.mapCtrl.view setHidden:YES];
     }
-    camera = [GMSCameraPosition cameraWithLatitude:latitude
-                                         longitude:longitude
-                                              zoom: zoom
-                                           bearing: bearing
-                                      viewingAngle: angle];
-
-    viewCtrl.map = [GMSMapView mapWithFrame:rect camera:camera];
+//    camera = [GMSCameraPosition cameraWithLatitude:latitude
+//                                         longitude:longitude
+//                                              zoom: zoom
+//                                           bearing: bearing
+//                                      viewingAngle: angle];
+    [AMapServices sharedServices].enableHTTPS = YES;
+    viewCtrl.map = [[MAMapView alloc] init];
+    viewCtrl.map = [viewCtrl.map initWithFrame: self.pluginLayer.pluginScrollView.frame];
     viewCtrl.view = viewCtrl.map;
+    viewCtrl.map.center = CGPointMake(latitude, longitude);
+    
 
     //mapType
     NSString *typeStr = [initOptions valueForKey:@"mapType"];
     if (typeStr) {
 
       NSDictionary *mapTypes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                ^() {return kGMSTypeHybrid; }, @"MAP_TYPE_HYBRID",
-                                ^() {return kGMSTypeSatellite; }, @"MAP_TYPE_SATELLITE",
-                                ^() {return kGMSTypeTerrain; }, @"MAP_TYPE_TERRAIN",
-                                ^() {return kGMSTypeNormal; }, @"MAP_TYPE_NORMAL",
-                                ^() {return kGMSTypeNone; }, @"MAP_TYPE_NONE",
+                                ^() {return MAMapTypeStandard; }, @"MAP_TYPE_HYBRID",
+                                ^() {return MAMapTypeSatellite; }, @"MAP_TYPE_SATELLITE",
+                                ^() {return MAMapTypeBus; }, @"MAP_TYPE_TERRAIN",
+                                ^() {return MAMapTypeStandard; }, @"MAP_TYPE_NORMAL",
+                                ^() {return MAMapTypeStandard; }, @"MAP_TYPE_NONE",
                                 nil];
 
-      typedef GMSMapViewType (^CaseBlock)();
-      GMSMapViewType mapType;
-      CaseBlock caseBlock = mapTypes[typeStr];
-      if (caseBlock) {
-        // Change the map type
-        mapType = caseBlock();
+     
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+      ((MAMapView *)(viewCtrl.view)).mapType = mapTypes[typeStr];
+    }];
 
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-          ((GMSMapView *)(viewCtrl.view)).mapType = mapType;
-        }];
-      }
     }
     viewCtrl.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
 
     //indoor display
-    ((GMSMapView *)(viewCtrl.view)).delegate = viewCtrl;
-    ((GMSMapView *)(viewCtrl.view)).indoorDisplay.delegate = viewCtrl;
+    ((MAMapView *)(viewCtrl.view)).delegate = viewCtrl;
+//    ((MAMapView *)(viewCtrl.view)).indoorDisplay.delegate = viewCtrl;
     [self.pluginLayer addPluginOverlay:viewCtrl];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -380,61 +371,61 @@
     self.pluginLayer.isSuspended = false;
   }
 
-  dispatch_async(dispatch_get_main_queue(), ^{
-
-    CDVViewController *cdvViewController = (CDVViewController*)self.viewController;
-    NSDictionary *meta = [command.arguments objectAtIndex:0];
-    NSString *panoramaId = [meta objectForKey:@"__pgmId"];
-    NSString *divId = [command.arguments objectAtIndex:2];
-
-    // Wrapper view
-    PluginStreetViewPanoramaController* panoramaCtrl = [[PluginStreetViewPanoramaController alloc] initWithOptions:nil];
-    panoramaCtrl.webView = self.webView;
-    panoramaCtrl.isFullScreen = YES;
-    panoramaCtrl.overlayId = panoramaId;
-    panoramaCtrl.divId = divId;
-    panoramaCtrl.title = panoramaId;
-    //[mapCtrl.view setHidden:YES];
-
-    // Create an instance of the PluginStreetViewPanorama class everytime.
-    PluginStreetViewPanorama *pluginStreetView = [[PluginStreetViewPanorama alloc] init];
-    [pluginStreetView pluginInitialize];
-
-    // Hack:
-    // In order to load the plugin instance of the same class but different names,
-    // register the street view plugin instance into the pluginObjects directly.
-    if ([pluginStreetView respondsToSelector:@selector(setViewController:)]) {
-      [pluginStreetView setViewController:cdvViewController];
-    }
-    if ([pluginStreetView respondsToSelector:@selector(setCommandDelegate:)]) {
-      [pluginStreetView setCommandDelegate:cdvViewController.commandDelegate];
-    }
-    [cdvViewController.pluginObjects setObject:pluginStreetView forKey:panoramaId];
-    [cdvViewController.pluginsMap setValue:panoramaId forKey:panoramaId];
-    [pluginStreetView pluginInitialize];
-
-    [self.viewPlugins setObject:pluginStreetView forKey:panoramaId];
-
-    CGRect rect = CGRectZero;
-    // Sets the panorama div id.
-    pluginStreetView.panoramaCtrl = panoramaCtrl;
-    pluginStreetView.panoramaCtrl.divId = divId;
-    if (pluginStreetView.panoramaCtrl.divId != nil) {
-      NSDictionary *domInfo = [self.pluginLayer.pluginScrollView.HTMLNodes objectForKey:pluginStreetView.panoramaCtrl.divId];
-      if (domInfo != nil) {
-        rect = CGRectFromString([domInfo objectForKey:@"size"]);
-      }
-    }
-
-    panoramaCtrl.panoramaView = [GMSPanoramaView panoramaWithFrame:rect nearCoordinate: CLLocationCoordinate2DMake(0, 0)];
-    panoramaCtrl.view = panoramaCtrl.panoramaView;
-    panoramaCtrl.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    ((GMSPanoramaView *)(panoramaCtrl.view)).delegate = panoramaCtrl;
-    [self.pluginLayer addPluginOverlay:panoramaCtrl];
-
-    [pluginStreetView getPanorama:command];
-
-  });
+//  dispatch_async(dispatch_get_main_queue(), ^{
+//
+//    CDVViewController *cdvViewController = (CDVViewController*)self.viewController;
+//    NSDictionary *meta = [command.arguments objectAtIndex:0];
+//    NSString *panoramaId = [meta objectForKey:@"__pgmId"];
+//    NSString *divId = [command.arguments objectAtIndex:2];
+//
+//    // Wrapper view
+//    PluginStreetViewPanoramaController* panoramaCtrl = [[PluginStreetViewPanoramaController alloc] initWithOptions:nil];
+//    panoramaCtrl.webView = self.webView;
+//    panoramaCtrl.isFullScreen = YES;
+//    panoramaCtrl.overlayId = panoramaId;
+//    panoramaCtrl.divId = divId;
+//    panoramaCtrl.title = panoramaId;
+//    //[mapCtrl.view setHidden:YES];
+//
+//    // Create an instance of the PluginStreetViewPanorama class everytime.
+//    PluginStreetViewPanorama *pluginStreetView = [[PluginStreetViewPanorama alloc] init];
+//    [pluginStreetView pluginInitialize];
+//
+//    // Hack:
+//    // In order to load the plugin instance of the same class but different names,
+//    // register the street view plugin instance into the pluginObjects directly.
+//    if ([pluginStreetView respondsToSelector:@selector(setViewController:)]) {
+//      [pluginStreetView setViewController:cdvViewController];
+//    }
+//    if ([pluginStreetView respondsToSelector:@selector(setCommandDelegate:)]) {
+//      [pluginStreetView setCommandDelegate:cdvViewController.commandDelegate];
+//    }
+//    [cdvViewController.pluginObjects setObject:pluginStreetView forKey:panoramaId];
+//    [cdvViewController.pluginsMap setValue:panoramaId forKey:panoramaId];
+//    [pluginStreetView pluginInitialize];
+//
+//    [self.viewPlugins setObject:pluginStreetView forKey:panoramaId];
+//
+//    CGRect rect = CGRectZero;
+//    // Sets the panorama div id.
+//    pluginStreetView.panoramaCtrl = panoramaCtrl;
+//    pluginStreetView.panoramaCtrl.divId = divId;
+//    if (pluginStreetView.panoramaCtrl.divId != nil) {
+//      NSDictionary *domInfo = [self.pluginLayer.pluginScrollView.HTMLNodes objectForKey:pluginStreetView.panoramaCtrl.divId];
+//      if (domInfo != nil) {
+//        rect = CGRectFromString([domInfo objectForKey:@"size"]);
+//      }
+//    }
+//
+//    panoramaCtrl.panoramaView = [GMSPanoramaView panoramaWithFrame:rect nearCoordinate: CLLocationCoordinate2DMake(0, 0)];
+//    panoramaCtrl.view = panoramaCtrl.panoramaView;
+//    panoramaCtrl.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+//    ((GMSPanoramaView *)(panoramaCtrl.view)).delegate = panoramaCtrl;
+//    [self.pluginLayer addPluginOverlay:panoramaCtrl];
+//
+//    [pluginStreetView getPanorama:command];
+//
+//  });
 }
 
 

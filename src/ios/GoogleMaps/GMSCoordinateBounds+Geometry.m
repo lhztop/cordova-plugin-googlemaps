@@ -9,7 +9,7 @@
 
 #define RADIANS_TO_DEGREES(radians) ((radians) * (180.0 / M_PI))
 
-@implementation GMSCoordinateBounds (MFAdditions)
+@implementation MACoordinateBounds (MFAdditions)
 
 - (CLLocationCoordinate2D)southEast {
 	CLLocationDegrees southEastLat = self.southWest.latitude;

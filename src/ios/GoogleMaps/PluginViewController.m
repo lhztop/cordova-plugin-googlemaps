@@ -6,7 +6,7 @@
 //
 //
 
-#import "PluginStreetViewPanoramaController.h"
+#import "PluginViewController.h"
 #if CORDOVA_VERSION_MIN_REQUIRED < __CORDOVA_4_0_0
 #import <Cordova/CDVJSON.h>
 #endif

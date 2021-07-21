@@ -15,7 +15,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
 //#import "MFGoogleMapAdditions/GMSCoordinateBounds+Geometry.h"
-#import "GMSCoordinateBounds+Geometry.h"
+//#import "GMSCoordinateBounds+Geometry.h"
 #import <math.h>
 #import "IPluginProtocol.h"
 #import "PluginViewController.h"
@@ -64,12 +64,14 @@ typedef void (^TIFAnimationGroupCompletionBlock)();
 
 
 @interface PluginUtil : NSObject
-+ (BOOL)isPolygonContains:(GMSPath *)path coordinate:(CLLocationCoordinate2D)coordinate projection:(GMSProjection *)projection;
-+ (CLLocationCoordinate2D)isPointOnTheLine:(GMSPath *)path coordinate:(CLLocationCoordinate2D)coordinate projection:(GMSProjection *)projection;
-+ (CLLocationCoordinate2D)isPointOnTheGeodesicLine:(GMSPath *)path coordinate:(CLLocationCoordinate2D)coordinate threshold:(double)threshold projection:(GMSProjection *)projection;
-+ (BOOL)isCircleContains:(GMSCircle *)circle coordinate:(CLLocationCoordinate2D)point;
+//+ (BOOL)isPolygonContains:(GMSPath *)path coordinate:(CLLocationCoordinate2D)coordinate projection:(GMSProjection *)projection;
+//+ (CLLocationCoordinate2D)isPointOnTheLine:(GMSPath *)path coordinate:(CLLocationCoordinate2D)coordinate projection:(GMSProjection *)projection;
+//+ (CLLocationCoordinate2D)isPointOnTheGeodesicLine:(GMSPath *)path coordinate:(CLLocationCoordinate2D)coordinate threshold:(double)threshold projection:(GMSProjection *)projection;
++ (BOOL)isCircleContains:(MACircle *)circle coordinate:(CLLocationCoordinate2D)point;
 + (BOOL)isInDebugMode;
-+ (GMSMutablePath *)getMutablePathFromCircle:(CLLocationCoordinate2D)center radius:(double)radius;
++ (MACoordinateBounds)getBoundsFromPoints:(NSArray *)latLngList;
++ (CLLocationCoordinate2D)centerOfBounds:(MACoordinateBounds)bounds;
++ (MACoordinateBounds)getMutablePathFromCircle:(CLLocationCoordinate2D)center radius:(double)radius;
 + (NSString *)getAbsolutePathFromCDVFilePath:(UIView*)theWebView cdvFilePath:(NSString *)cdvFilePath;
 + (NSString *)PGM_LOCALIZATION:(NSString *)key;
 @end

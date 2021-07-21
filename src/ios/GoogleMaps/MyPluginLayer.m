@@ -184,6 +184,17 @@
       //and update the background color for the webview to prevent issues with non transparent webview
       [self exchangeSubviewAtIndex:[self.subviews indexOfObject:self.webView]-1 withSubviewAtIndex:[self.subviews indexOfObject:self.pluginScrollView]];
       self.webView.backgroundColor = [UIColor clearColor];
+      self.webView.opaque = NO;
+      [[UIApplication sharedApplication].keyWindow addSubview:self.pluginScrollView];
+      [[UIApplication sharedApplication].keyWindow bringSubviewToFront:self.pluginScrollView];
+      [[UIApplication sharedApplication].keyWindow addSubview:self.webView];
+      self.webView.scrollView.backgroundColor = [UIColor clearColor];
+      [[UIApplication sharedApplication].keyWindow bringSubviewToFront:self.webView];
+//      [self.webView setValue:[NSNumber numberWithBool: YES] forKey:@"drawsTransparentBackground"];
+
+      
+//      [self.webView setValue:@(NO) forKey:[@"sward" + @"background"]];
+//      [self.webView setValue:@(NO) forKey:@"drawsBACKGROUND"];
 
       // Add the mapView under the scroll view.
       [pluginViewCtrl.view setTag:pluginViewCtrl.viewDepth];
@@ -277,8 +288,8 @@
       if (pluginViewCtrl.isRenderedAtOnce == YES ||
           ([pluginViewCtrl.overlayId hasPrefix:@"panorama_"] ||
             ([pluginViewCtrl.overlayId hasPrefix:@"map_"] &&
-            ((GMSMapView *)pluginViewCtrl.view).mapType != kGMSTypeSatellite &&
-            ((GMSMapView *)pluginViewCtrl.view).mapType != kGMSTypeHybrid)
+            ((MAMapView *)pluginViewCtrl.view).mapType != MAMapTypeSatellite &&
+            ((MAMapView *)pluginViewCtrl.view).mapType != MAMapTypeBus)
           )) {
 
         if (rect.origin.y + rect.size.height >= offset.y &&
@@ -308,21 +319,21 @@
     }
 
     if (pluginViewCtrl.attached) {
-//      if (pluginViewCtrl.isRenderedAtOnce) {
-//
-//        __block int zPosition = pluginViewCtrl.view.layer.zPosition;
-//        [UIView animateWithDuration:0.075f animations:^{
-//          [pluginViewCtrl.view setFrame:rect];
-//          pluginViewCtrl.view.layer.zPosition = zPosition;
-//          //rect.origin.x = 0;
-//          //rect.origin.y = 0;
-//        }];
-//      } else {
+      // if (pluginViewCtrl.isRenderedAtOnce) {
+
+      //   __block int zPosition = pluginViewCtrl.view.layer.zPosition;
+      //   [UIView animateWithDuration:0.075f animations:^{
+      //     [pluginViewCtrl.view setFrame:rect];
+      //     pluginViewCtrl.view.layer.zPosition = zPosition;
+      //     //rect.origin.x = 0;
+      //     //rect.origin.y = 0;
+      //   }];
+      // } else {
         [pluginViewCtrl.view setFrame:rect];
         //rect.origin.x = 0;
         //rect.origin.y = 0;
         pluginViewCtrl.isRenderedAtOnce = YES;
-//      }
+      // }
     } else {
       [pluginViewCtrl.view setFrame:CGRectMake(0, -pluginViewCtrl.view.frame.size.height, pluginViewCtrl.view.frame.size.width, pluginViewCtrl.view.frame.size.height)];
     }
