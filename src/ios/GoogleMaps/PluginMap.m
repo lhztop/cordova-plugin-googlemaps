@@ -30,8 +30,8 @@
   self.isRemoved = YES;
 
   //   Load the GoogleMap.m
-  CDVViewController *cdvViewController = (CDVViewController*)self.viewController;
-  CordovaGoogleMaps *googlemaps = [cdvViewController getCommandInstance:@"CordovaGoogleMaps"];
+  // CDVViewController *cdvViewController = (CDVViewController*)self.viewController;
+  // CordovaGoogleMaps *googlemaps = [cdvViewController getCommandInstance:@"CordovaGoogleMaps"];
 
   [self clear:nil];
 
@@ -600,16 +600,16 @@
 //                                                                             bearing:bearing
 //                                                                        viewingAngle:angle];
 //
-//          if (self.isRemoved) {
-//            [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR] callbackId:command.callbackId];
-//            return;
-//          }
+          if (self.isRemoved) {
+            [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR] callbackId:command.callbackId];
+            return;
+          }
 //          [self.mapCtrl.map setCamera:cameraPosition2];
 //          dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 //            GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithRegion:self.mapCtrl.map.projection.visibleRegion];
 //            [self.mapCtrl.map cameraForBounds:bounds insets:paddingUiEdgeInsets];
 //            [self.mapCtrl.view setHidden:NO];
-//            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 //
 //          });
 //
@@ -850,6 +850,7 @@
 //        [self.mapCtrl.map setCameraTargetBounds:[[GMSCoordinateBounds alloc] initWithPath:path]];
 //      }
     }
+    }
 
     //styles
     NSString *styles = [initOptions valueForKey:@"styles"];
@@ -903,7 +904,6 @@
       CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
       [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
-  }
   }];
 
 }

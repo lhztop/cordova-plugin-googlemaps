@@ -185,11 +185,11 @@
       [self exchangeSubviewAtIndex:[self.subviews indexOfObject:self.webView]-1 withSubviewAtIndex:[self.subviews indexOfObject:self.pluginScrollView]];
       self.webView.backgroundColor = [UIColor clearColor];
       self.webView.opaque = NO;
-      [[UIApplication sharedApplication].keyWindow addSubview:self.pluginScrollView];
-      [[UIApplication sharedApplication].keyWindow bringSubviewToFront:self.pluginScrollView];
-      [[UIApplication sharedApplication].keyWindow addSubview:self.webView];
-      self.webView.scrollView.backgroundColor = [UIColor clearColor];
-      [[UIApplication sharedApplication].keyWindow bringSubviewToFront:self.webView];
+//      [[UIApplication sharedApplication].keyWindow addSubview:self.pluginScrollView];
+//      [[UIApplication sharedApplication].keyWindow bringSubviewToFront:self.pluginScrollView];
+//      [[UIApplication sharedApplication].keyWindow addSubview:self.webView];
+//      self.webView.scrollView.backgroundColor = [UIColor clearColor];
+//      [[UIApplication sharedApplication].keyWindow bringSubviewToFront:self.webView];
 //      [self.webView setValue:[NSNumber numberWithBool: YES] forKey:@"drawsTransparentBackground"];
 
       

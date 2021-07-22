@@ -42,9 +42,6 @@
       index = i;
       break;
     }
-      if (tag == depth) { //see that
-          return;
-      }
   }
   
   [self insertSubview:view atIndex:index];
