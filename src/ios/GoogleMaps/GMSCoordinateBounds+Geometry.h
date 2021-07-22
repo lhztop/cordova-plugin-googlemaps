@@ -8,6 +8,30 @@
 //#import <GoogleMaps/GoogleMaps.h>
 #import <AMapNaviKit/MAMapKit.h>
 
+//macro from: https://medium.com/@kostiakoval/objective-c-associated-objects-8896854c681b
+//github: https://github.com/kostiakoval/NSObject-Associated/blob/master/NSObject-Associated/KKNSObject%2BAssociated.h
+
+/**
+ * A macro that creates getter and setter for your assosiated object
+ *
+ * @param propertyName Getter funtion name
+ * @param setter Setter funtion name
+ * @param objc_AssociationPolicy Memory policy for assosiated object
+ *
+ * Available option: OBJC_ASSOCIATION_ASSIGN, OBJC_ASSOCIATION_RETAIN_NONATOMIC, OBJC_ASSOCIATION_COPY_NONATOMIC, OBJC_ASSOCIATION_RETAIN, OBJC_ASSOCIATION_COPY
+ *
+ */
+#import <objc/runtime.h>
+#define ASSOCIATED(propertyName, setter, type, objc_AssociationPolicy)\
+- (type)propertyName {\
+return objc_getAssociatedObject(self, _cmd);\
+}\
+\
+- (void)setter:(type)object\
+{\
+objc_setAssociatedObject(self, @selector(propertyName), object, objc_AssociationPolicy);\
+}
+
 //@interface MACoordinateBounds (MFAdditions)
 //
 ///** The North-West corner of these bounds. */
@@ -135,6 +159,13 @@
  Setting this property will add the overlay to the map. Setting it to nil removes this overlay from the map. An overlay may be active on at most one map at any given time.
  */
 @property(readwrite, assign) MAMapView* map;
+
+/**
+ * Higher zIndex value overlays will be drawn on top of lower zIndex value tile layers and overlays.
+
+Equal values result in undefined draw ordering. Markers are an exception that regardless of zIndex, they will always be drawn above tile layers and other non-marker overlays; they are effectively considered to be in a separate z-index group compared to other overlays.
+*/
+@property(readwrite, assign) int zIndex;
 
 @end
 
