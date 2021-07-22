@@ -224,6 +224,7 @@
   } else {
     if (visible) {
       marker.map = self.mapCtrl.map;
+        [self.mapCtrl.map addAnnotation:marker];
     } else {
       marker.map = nil;
     }
@@ -842,6 +843,7 @@
       // The `visible` property
       if (iconProperty[@"visible"] == [NSNumber numberWithBool:true]) {
         marker.map = self.mapCtrl.map;
+        [self.mapCtrl.map addAnnotation:marker];
       } else if (iconProperty[@"visible"] == [NSNumber numberWithBool:false]) {
         marker.map = nil;
       }
@@ -945,6 +947,7 @@
       // The `visible` property
       if (iconProperty[@"visible"] == [NSNumber numberWithBool:true]) {
         marker.map = self.mapCtrl.map;
+        [self.mapCtrl.map addAnnotation:marker];
       } else if (iconProperty[@"visible"] == [NSNumber numberWithBool:false]) {
         marker.map = nil;
       }
@@ -1092,6 +1095,7 @@
             // The `visible` property
             if (iconProperty[@"visible"] == [NSNumber numberWithBool:true]) {
               marker.map = self.mapCtrl.map;
+              [self.mapCtrl.map addAnnotation:marker];
             } else if (iconProperty[@"visible"] == [NSNumber numberWithBool:false]) {
               marker.map = nil;
             }
@@ -1238,6 +1242,7 @@
       // The `visible` property
       if (iconProperty[@"visible"] == [NSNumber numberWithBool:true]) {
         marker.map = self.mapCtrl.map;
+        [self.mapCtrl.map addAnnotation:marker];
       } else if (iconProperty[@"visible"] == [NSNumber numberWithBool:false]) {
         marker.map = nil;
       }
@@ -1336,6 +1341,7 @@
       // The `visible` property
       if (iconProperty[@"visible"] == [NSNumber numberWithBool:true]) {
         marker.map = self.mapCtrl.map;
+        [self.mapCtrl.map addAnnotation:marker];
       } else if (iconProperty[@"visible"] == [NSNumber numberWithBool:false]) {
         marker.map = nil;
       }

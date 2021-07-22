@@ -531,7 +531,8 @@
         latLng = [json objectForKey:@"target"];
         latitude = [[latLng valueForKey:@"lat"] doubleValue];
         longitude = [[latLng valueForKey:@"lng"] doubleValue];
-
+          [self.mapCtrl.map setCenterCoordinate:CLLocationCoordinate2DMake(latitude,  longitude)];
+          [self.mapCtrl.map setZoomLevel:zoom];
 //        cameraPosition = [GMSCameraPosition cameraWithLatitude:latitude
 //                                                     longitude:longitude
 //                                                          zoom:zoom
@@ -544,6 +545,7 @@
 //                                                        zoom:zoom
 //                                                     bearing:bearing
 //                                                viewingAngle:angle];
+        [self.mapCtrl.map setZoomLevel:zoom];
     }
 
     float duration = 5.0f;
