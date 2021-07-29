@@ -13,13 +13,15 @@
 
   Both [PhoneGap](http://phonegap.com/) and [Apache Cordova](http://cordova.apache.org/) are supported.
 
-  I init the project, for merge amap api to cordova-plugin-googlemaps, which provide native amap in ionic, cordova projects. However, googlemaps api is so different to amp, I decide to implement subnet of the cordova-plugin-googlemaps api:
+  I init this project, for merge amap api to cordova-plugin-googlemaps, which provide native amap in ionic, cordova projects. However, googlemaps api is so different to amp, I decide to implement subnet of the cordova-plugin-googlemaps api:
   1) basic functions, getMap
   2) Marker
-  --
+
+  
+  
   Futher functions, please feedback me. 
   QQ group: 217463572 
   <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=Hn_L9Lfs25GKMk3OixAo2n_o_fKbWm8J&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="cordova 高德地图" title="cordova 高德地图"></a>
   
-  thanks.
+  Thanks for orignal cordova-plugin-googlemaps teams.
 
