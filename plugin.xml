@@ -357,7 +357,7 @@
         <param name="ios-package" value="PluginStreetViewPanorama"/>
       </feature> -->
     </config-file>
-    <resource-file src="libs/AMapNavi-NO-IDFA/AMapNaviKit.framework/AMap.bundle"/>
+    <!-- <resource-file src="libs/AMapNavi-NO-IDFA/AMapNaviKit.framework/AMap.bundle"/> -->
     <header-file src="src/ios/GoogleMaps/PluginObjects.h"/>
     <source-file src="src/ios/GoogleMaps/PluginObjects.m"/>
     <header-file src="src/ios/GoogleMaps/PluginCircle.h"/>
@@ -392,8 +392,8 @@
     <source-file src="src/ios/GoogleMaps/TBXML.m"/>
     <header-file src="src/ios/GoogleMaps/PluginTileOverlay.h"/>
     <source-file src="src/ios/GoogleMaps/PluginTileOverlay.m"/>
-    <header-file src="src/ios/GoogleMaps/MFGoogleMapAdditions/GMSCoordinateBounds+Geometry.h"/>
-    <source-file src="src/ios/GoogleMaps/MFGoogleMapAdditions/GMSCoordinateBounds+Geometry.m"/>
+    <header-file src="src/ios/GoogleMaps/GMSCoordinateBounds+Geometry.h"/>
+    <source-file src="src/ios/GoogleMaps/GMSCoordinateBounds+Geometry.m"/>
     <header-file src="src/ios/GoogleMaps/MyPluginLayer.h"/>
     <source-file src="src/ios/GoogleMaps/MyPluginLayer.m"/>
     <header-file src="src/ios/GoogleMaps/MyPluginScrollView.h"/>
@@ -474,14 +474,14 @@
     </config-file>
 
     <dependency id="com.googlemaps.ios" url="https://github.com/mapsplugin/cordova-plugin-googlemaps-sdk"  />
-    <!-- <framework src="AMapLocation-NO-IDFA" type="podspec" spec="~> 2.6" />
+    <framework src="AMapLocation-NO-IDFA" type="podspec" spec="~> 2.6" />
     <framework src="AMapFoundation-NO-IDFA" type="podspec" spec="~> 1.6" />
     <framework src="AMapSearch-NO-IDFA" type="podspec" spec="~> 7.9" />
-    <framework src="AMapNavi-NO-IDFA" type="podspec" spec="~> 7.9" /> -->
-    <framework src="libs/AMapFoundation-NO-IDFA/AMapFoundationKit.framework"  custom="true"/>
+    <framework src="AMapNavi-NO-IDFA" type="podspec" spec="~> 7.9" />
+    <!-- <framework src="libs/AMapFoundation-NO-IDFA/AMapFoundationKit.framework"  custom="true"/>
     <framework src="libs/AMapLocation-NO-IDFA/AMapLocationKit.framework"  custom="true"/> 
     <framework src="libs/AMapSearch-NO-IDFA/AMapSearchKit.framework"  custom="true"/> 
-    <framework src="libs/AMapNavi-NO-IDFA/AMapNaviKit.framework"  custom="true"/> 
+    <framework src="libs/AMapNavi-NO-IDFA/AMapNaviKit.framework"  custom="true"/>  -->
     <!-- <framework src="GLKit.framework" /> -->
     <!-- <framework src="JavaScriptcore.framework" />
     <framework src="SystemConfiguration.framework" />
