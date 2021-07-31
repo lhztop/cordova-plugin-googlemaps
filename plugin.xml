@@ -357,7 +357,7 @@
         <param name="ios-package" value="PluginStreetViewPanorama"/>
       </feature> -->
     </config-file>
-    <<resource-file src="libs/AMapNavi-NO-IDFA/AMapNaviKit.framework/AMap.bundle"/>
+    <resource-file src="libs/AMapNavi-NO-IDFA/AMapNaviKit.framework/AMap.bundle"/>
     <header-file src="src/ios/GoogleMaps/PluginObjects.h"/>
     <source-file src="src/ios/GoogleMaps/PluginObjects.m"/>
     <header-file src="src/ios/GoogleMaps/PluginCircle.h"/>
