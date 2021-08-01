@@ -475,7 +475,9 @@
     <config-file target="*-Info.plist" parent="NSMotionUsageDescription">
       <string>应用需要获取您的移动信息</string>
     </config-file>
-
+    <config-file target="*-Info.plist" parent="AMapAppKey">
+      <string>$AMAP_IOS_KEY</string>
+    </config-file>
     <dependency id="com.googlemaps.ios" url="https://github.com/mapsplugin/cordova-plugin-googlemaps-sdk"  />
     <framework src="AMapLocation-NO-IDFA" type="podspec" spec="~> 2.6" />
     <framework src="AMapFoundation-NO-IDFA" type="podspec" spec="~> 1.6" />
