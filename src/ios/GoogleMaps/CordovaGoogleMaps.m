@@ -13,6 +13,10 @@
 - (void)pluginInitialize
 {
 
+  NSDictionary* infoDict = [[NSBundle mainBundle] infoDictionary];
+  [AMapServices sharedServices].apiKey = [infoDict objectForKey:@"AMapAppKey"];
+  [AMapServices sharedServices].enableHTTPS = YES;
+  
   self.webView.backgroundColor = [UIColor clearColor];
   self.webView.opaque = NO;
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pageDidLoad) name:CDVPageDidLoadNotification object:nil];
@@ -207,9 +211,6 @@
   if (self.pluginLayer != nil) {
     self.pluginLayer.isSuspended = false;
   }
-  NSDictionary* infoDict = [[NSBundle mainBundle] infoDictionary];
-  [AMapServices sharedServices].apiKey = [infoDict objectForKey:@"AMapAppKey"];
-    [AMapServices sharedServices].apiKey = @"f7b85295f279400a24103ab11849bdf3";
 
   dispatch_async(dispatch_get_main_queue(), ^{
 
@@ -323,7 +324,6 @@
 //                                              zoom: zoom
 //                                           bearing: bearing
 //                                      viewingAngle: angle];
-    [AMapServices sharedServices].enableHTTPS = YES;
     viewCtrl.map = [[MAMapView alloc] init];
     viewCtrl.map = [viewCtrl.map initWithFrame: self.pluginLayer.pluginScrollView.frame];
     viewCtrl.view = viewCtrl.map;
