@@ -101,6 +101,9 @@ objc_setAssociatedObject(self, @selector(propertyName), object, objc_Association
  */
 @property(readwrite, assign) GMSMarkerLayer* layer;
 
+
+@property(readwrite, assign) UIImage* icon;
+
 /**
  
  */
