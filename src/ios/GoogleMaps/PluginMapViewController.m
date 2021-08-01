@@ -10,6 +10,26 @@
 
 @implementation PluginMapViewController
 
+- (MAAnnotationView *)mapView:(MAMapView *)mapView viewForAnnotation:(id<MAAnnotation>)annotation
+{
+    if ([annotation isKindOfClass:[MAPointAnnotation class]])
+        {
+            MAPointAnnotation *pa = (MAPointAnnotation*)annotation;
+            NSString *reuseIndetifier = [NSString stringWithFormat:@"%@", pa.userData];
+            MAAnnotationView *annotationView = (MAAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:reuseIndetifier];
+            if (annotationView == nil)
+            {
+                annotationView = [[MAAnnotationView alloc] initWithAnnotation:annotation
+    reuseIdentifier:reuseIndetifier];
+            }
+            annotationView.image = pa.icon;
+            //设置中心点偏移，使得标注底部中间点成为经纬度对应点
+            annotationView.centerOffset = CGPointMake(0, -18);
+            return annotationView;
+        }
+        return nil;
+}
+
 - (void)mapView:(MAMapView *)mapView didTapPOIWithPlaceID:(NSString *)placeID name:(NSString *)name location:(CLLocationCoordinate2D)location {
   NSString* jsName = [name stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
   jsName = [jsName stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];

@@ -923,7 +923,7 @@
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
-//      marker.icon = image;
+      marker.icon = image;
 
       CGFloat anchorX = 0;
       CGFloat anchorY = 0;
@@ -1073,7 +1073,7 @@
           }
 
           dispatch_async(dispatch_get_main_queue(), ^{
-//            marker.icon = image;
+            marker.icon = image;
 
             // The `anchor` property for the icon
             if ([iconProperty valueForKey:@"anchor"] && [iconProperty valueForKey:@"anchor"] != [NSNull null]) {
@@ -1218,7 +1218,7 @@
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
-//      marker.icon = image;
+      marker.icon = image;
 
       CGFloat anchorX = 0;
       CGFloat anchorY = 0;
@@ -1319,7 +1319,7 @@
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
-//      marker.icon = image;
+      marker.icon = image;
 
       // The `anchor` property for the icon
       if ([iconProperty valueForKey:@"anchor"] && [iconProperty valueForKey:@"anchor"] != [NSNull null]) {
