@@ -237,7 +237,7 @@
       <!-- for Android 9 or above -->
       <uses-library android:name="org.apache.http.legacy" android:required="false"/>
       <service android:name="com.amap.api.location.APSService"></service>
-      <meta-data android:name="com.amap.api.v2.apikey" android:value="${AMAP_ANDROID_KEY}"/>
+      <meta-data android:name="com.amap.api.v2.apikey" android:value="$AMAP_ANDROID_KEY"/>
     </config-file>
 
     <config-file target="AndroidManifest.xml" parent="/manifest">
@@ -291,7 +291,7 @@
     <lib-file src="libs/armeabi-v7a"/>
     <lib-file src="libs/x86"/>
     <lib-file src="libs/x86_64"/> -->
-    <framework src="com.amap.api:3dmap:latest.integration" />
+    <!--framework src="com.amap.api:3dmap:latest.integration" /-->
     <framework src="com.amap.api:navi-3dmap:latest.integration" />
     <framework src="com.amap.api:search:latest.integration" />
     <framework src="com.amap.api:location:latest.integration" />
